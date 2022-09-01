@@ -1,0 +1,9 @@
+!!python/object:options.Options
+dataset_path: /mnt/scannet-data-png2/
+tuple_info_file_location: data_splits/ScanNetv2/standard_split/
+dataset_scan_split_file: data_splits/ScanNetv2/standard_split/scannetv2_val.txt
+dataset: scannet
+mv_tuple_file_suffix: _eight_view_deepvmvs.txt
+num_images_in_tuple: 8
+frame_tuple_type: default
+split: val

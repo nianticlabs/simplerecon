@@ -1,0 +1,9 @@
+!!python/object:options.Options
+dataset_path: /mnt/res_nas/shared/datasets/7scenes/
+tuple_info_file_location: data_splits/7Scenes/dvmvs_split/
+dataset_scan_split_file: data_splits/7Scenes/dvmvs_split/dvmvs_test_split.txt
+dataset: 7scenes
+mv_tuple_file_suffix: _eight_view_deepvmvs_dense.txt
+num_images_in_tuple: 8
+frame_tuple_type: dense
+split: test

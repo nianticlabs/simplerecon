@@ -1,0 +1,18 @@
+!!python/object:options.Options
+feature_volume_type: simple_cost_volume
+batch_size: 16
+cost_volume_aggregation: dot
+cv_encoder_type: multi_scale_encoder
+depth_decoder_name: unet_pp
+gpus: 2
+image_encoder_name: efficientnet
+log_interval: 100
+loss_type: log_l1
+lr: 0.0001
+wd: 0.0001
+matching_encoder_type: resnet
+name: dot_product_model
+num_sanity_val_steps: 0
+num_workers: 12
+precision: 16
+random_seed: 0

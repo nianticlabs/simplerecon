@@ -1,0 +1,9 @@
+!!python/object:options.Options
+dataset_path: /mnt/res_nas/mohameds/datasets/colmap/
+tuple_info_file_location: /mnt/res_nas/mohameds/datasets/colmap/tuples
+dataset_scan_split_file: /mnt/res_nas/mohameds/datasets/colmap/test.txt
+dataset: colmap
+mv_tuple_file_suffix: _eight_view_deepvmvs_dense.txt
+num_images_in_tuple: 8
+frame_tuple_type: dense
+split: test
