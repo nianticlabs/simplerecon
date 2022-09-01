@@ -241,7 +241,7 @@ when no vaiid MVS information exists using `--mask_pred_depths`. This is not
 enabled by default.
 
 You can also fuse the best guess depths from the cost volume before the 
-U-Net that introduces the strong image prior. You can do this by using 
+cost volume encoder-decoder that introduces a strong image prior. You can do this by using 
 `--fusion_use_raw_lowest_cost`.
 
 Meshes will be stored under `results_path/meshes/`.
