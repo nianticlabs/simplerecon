@@ -35,9 +35,17 @@ def main(opts):
 
     # set seed
     pl.seed_everything(opts.random_seed) 
+    
 
-    # load model using read options
-    model = DepthModel(opts)
+    if opts.load_weights_from_checkpoint is not None:
+        model = DepthModel.load_from_checkpoint(
+            opts.load_weights_from_checkpoint,
+            opts=opts,
+            args=None
+        )
+    else:
+        # load model using read options
+        model = DepthModel(opts)
 
     # load dataset and dataloaders
     dataset_class, _ = get_dataset(opts.dataset, 
