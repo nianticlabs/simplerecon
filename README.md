@@ -172,7 +172,7 @@ All results will be stored at a base results folder (results_path) at:
 
     opts.output_base_path/opts.name/opts.dataset/opts.frame_tuple_type/
 
-where opts is the `options` class. For example when `opts.output_base_path` is `./results`, `opts.name` is `HERO_MODEL`,
+where opts is the `options` class. For example, when `opts.output_base_path` is `./results`, `opts.name` is `HERO_MODEL`,
 `opts.dataset` is `scannet`, and `opts.frame_tuple_type` is `default`, the output directory will be 
 
     ./results/HERO_MODEL/scannet/default/
