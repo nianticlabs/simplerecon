@@ -128,8 +128,6 @@ def main(opts):
             viz_depth_panel = True
             all_meshes_precomputed = True
             for batch_ind, batch in enumerate(tqdm(dataloader)):
-                # if len(mesh_render_fpv_frames) == 100:
-                #     break
                 
                 # get data, move to GPU
                 cur_data, src_data = batch
