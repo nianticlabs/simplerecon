@@ -56,6 +56,8 @@ Please follow the instructions [here](https://github.com/ScanNet/ScanNet) to dow
 
 Once downloaded, use this [script](https://github.com/ScanNet/ScanNet/tree/master/SensReader/python) to export raw sensor data to images and depth files.
 
+You should change the `dataset_path` config argument for ScanNetv2 data configs at `configs/data/` to match where your dataset is.
+
 The codebase expects ScanNetv2 to be in the following format:
 
     dataset_path
