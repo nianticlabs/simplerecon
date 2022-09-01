@@ -9,7 +9,7 @@
 
     Run like so for generating a list of test tuples of eight frames (default):
     
-    python ./scripts/generate_test_tuples.py 
+    python ./data_scripts/generate_test_tuples.py 
         --data_config configs/data/scannet_default_test.yaml
         --num_workers 16
     
@@ -546,6 +546,11 @@ if __name__ == '__main__':
     option_handler.parse_and_merge_options(ignore_cl_args=False)
     option_handler.pretty_print_options()
     opts = option_handler.options
+    
+    Path(os.path.join(os.path.expanduser("~"), "tmp/")).mkdir(
+                                        parents=True, exist_ok=True
+                                    )
+    
     opts_temp_filepath = os.path.join(
         os.path.expanduser("~"),
         "tmp/", 
