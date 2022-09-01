@@ -137,12 +137,12 @@ Example for test:
 
 ```bash
 # default tuples
-python ./scripts/generate_test_tuples.py 
+python ./data_scripts/generate_test_tuples.py 
     --data_config configs/data/scannet_default_test.yaml
     --num_workers 16
 
 # dense tuples
-python ./scripts/generate_test_tuples.py 
+python ./data_scripts/generate_test_tuples.py 
     --data_config configs/data/scannet_dense_test.yaml
     --num_workers 16
 ```
@@ -151,12 +151,12 @@ Examples for train:
 
 ```bash
 # train
-python ./scripts/generate_train_tuples.py 
+python ./data_scripts/generate_train_tuples.py 
     --data_config configs/data/scannet_default_train.yaml
     --num_workers 16
 
 # val
-python ./scripts/generate_val_tuples.py 
+python ./data_scripts/generate_val_tuples.py 
     --data_config configs/data/scannet_default_val.yaml
     --num_workers 16
 ```
