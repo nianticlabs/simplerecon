@@ -386,7 +386,7 @@ We thank Aljaž Božič of [TransformerFusion](https://github.com/AljazBozic/Tra
 
 The tuple generation scripts make heavy use of a modified version of DeepVideoMVS's [Keyframe buffer](https://github.com/ardaduz/deep-video-mvs/blob/master/dvmvs/keyframe_buffer.py) (thanks again Arda and co!).
 
-The PyTorch point cloud fusion module at `torch_point_cloud_fusion` code is borrowed from 3DVNet's [repo](https://github.com/alexrich021/3dvnet/blob/main/mv3d/eval/pointcloudfusion_custom.py) Thanks Alexander Rich!
+The PyTorch point cloud fusion module at `torch_point_cloud_fusion` code is borrowed from 3DVNet's [repo](https://github.com/alexrich021/3dvnet/blob/main/mv3d/eval/pointcloudfusion_custom.py). Thanks Alexander Rich!
 
 We'd also like to thank Niantic's infrastructure team for quick actions when we needed them. Thanks folks!
 
