@@ -177,7 +177,9 @@ where opts is the `options` class. For example, when `opts.output_base_path` is 
 
     ./results/HERO_MODEL/scannet/default/
 
-`frame_tuple_type` is the type of image tuple used for MVS. A selection should 
+Make sure to set `--opts.output_base_path` to a directory suitable for you to store results.
+
+`--frame_tuple_type` is the type of image tuple used for MVS. A selection should 
 be provided in the `data_config` file you used. 
 
 By default `test.py` will attempt to compute depth scores for each frame and provide both frame averaged and scene averaged metrics. The script will save these scores (per scene and totals) under `results_path/scores`.
