@@ -333,7 +333,7 @@ For point cloud evaluation, we use TransformerFusion's code but load in a point 
 
 ## ⏳ Training
 
-By default models and tensorboard event files are saved to `~/tmp/<model_name>`.
+By default models and tensorboard event files are saved to `~/tmp/tensorboard/<model_name>`.
 This can be changed with the `--log_dir` flag.
 
 We train with a batch_size of 16 with 16-bit precision on two A100s on the default ScanNetv2 split.
