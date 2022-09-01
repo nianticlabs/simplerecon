@@ -106,7 +106,7 @@ intrinsics:
         0.921157 0.0521417 -0.385682 1.46821
         -0.0587002 -0.961035 -0.270124 1.51837
 
-`frame-000261.color.512.png` and `frame-000261.color.640.png` are precached resized version of the original image to save load and compute time during training and testing. `frame-000261.depth.256.png` is also a 
+`frame-000261.color.512.png` and `frame-000261.color.640.png` are precached resized versions of the original image to save load and compute time during training and testing. `frame-000261.depth.256.png` is also a 
 precached resized version of the depth map. 
 
 All resized precached versions of depth and images are nice to have but not 
