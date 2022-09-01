@@ -139,13 +139,6 @@ class GenericMVSDataset(Dataset):
                 self.frame_tuples = [frame_tuple for frame_tuple in 
                         self.frame_tuples if limit_to_scan_id in frame_tuple]
 
-            # sort frames based on first frame_id.
-            if split == "test":
-                frame_ids = [frame_tuple.split(" ")[1]
-                                        for frame_tuple in self.frame_tuples]
-                self.frame_tuples = [self.frame_tuples[i] 
-                            for i in np.argsort(frame_ids).tolist()]
-
             # optionally skip every frame with interval skip_frame 
             if skip_frames is not None:
                 if verbose_init:
