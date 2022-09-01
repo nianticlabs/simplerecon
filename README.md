@@ -398,7 +398,7 @@ If you find our work useful in your research please consider citing our paper:
 @inproceedings{sayed2022simplerecon,
   title={SimpleRecon: 3D Reconstruction Without 3D Convolutions},
   author={Sayed, Mohamed and Gibson, John and Watson, Jamie and Prisacariu, Victor and Firman, Michael and Godard, Cl{\'e}ment},
-  booktitle={Proceedings of the European conference on computer vision (ECCV)},
+  booktitle={Proceedings of the European Conference on Computer Vision (ECCV)},
   year={2022},
 }
 ```
