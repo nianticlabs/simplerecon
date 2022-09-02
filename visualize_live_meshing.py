@@ -25,6 +25,8 @@ from utils.visualization_utils import colormap_image, save_viz_video_frames
 import modules.cost_volume as cost_volume
 
 def main(opts):
+    print("Setting batch size to 1.")
+    opts.batch_size = 1
 
     # get dataset
     dataset_class, scans = get_dataset(opts.dataset, 
