@@ -49,6 +49,9 @@ We provide the following models:
 With larger batches speed increases considerably. With batch size 8 on the non-speed optimized model, the latency drops to 
 ~40ms.
 
+## 📝 TODOs:
+- [ ] Simple scan for folks to quickly try the code, instead of downloading the ScanNetv2 test scenes.
+- [ ] FPN model weights.
 
 ## 💾 ScanNetv2 Dataset
 
