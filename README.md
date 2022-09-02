@@ -374,6 +374,36 @@ Change the data configs to whatever dataset you want to finetune to.
 
 See `options.py` for the range of other training options, such as learning rates and ablation settings, and testing options.
 
+## ✨ Visualization
+
+Other than quick depth visualization in the `test.py` script, there are two scripts for visualizign depth output. 
+
+The first is `visualization_scripts/visualize_scene_depth_output.py`. This will produce a video with color images of the reference and source frames, depth prediction, cost volume estimate, GT depth, and estimated normals from depth. The script assumes you have cached depth output using `test.py` and accepts the same command template format as `test.py`:
+
+```shell
+# Example command to get visualizations for dense frames
+CUDA_VISIBLE_DEVICES=0 python test.py --name HERO_MODEL \
+            --output_base_path OUTPUT_PATH \
+            --data_config configs/data/scannet_dense_test.yaml \
+            --num_workers 8;
+```
+
+where `OUTPUT_PATH` is the base results directory for SimpleRecon (what you used for test to begin with). You could optionally run `.visualization_scripts/generate_gt_min_max_cache.py` before this script to get a scene average for the min and max depth values used for colormapping; if those aren't available, the script will use 0m and 5m for colomapping min and max.
+
+The second allows a live visualization of meshing. This script will use cached depth maps if available, otherwise it will use the model to predict them before fusion. The script will iteratively load in a depth map, fuse it, save a mesh file at this step, and render this mesh alongside a camera marker for the birdseye video, and from the point of view of the camera for the fpv video. 
+
+```shell
+# Example command to get live visualizations for mesh reconstruction
+CUDA_VISIBLE_DEVICES=0 python visualize_live_meshing.py --name HERO_MODEL \
+            --output_base_path OUTPUT_PATH \
+            --config_file configs/models/hero_model.yaml \
+            --load_weights_from_checkpoint weights/hero_model.ckpt \
+            --data_config configs/data/scannet_dense_test.yaml \
+            --num_workers 8;
+```
+
+By default the script will save meshes to an intermediate location, and you can optionally load those meshes to save time when visualizing the same meshes again by passing `--use_precomputed_partial_meshes`. All intermediate meshes will have had to be computed on the previous run for this to work.
+
 ## 📝🧮👩‍💻 Notation for Transformation Matrices
 
 This repo uses the notation "cam_T_world" to denote a transformation from world to camera points (extrinsics). The intention is to make it so that the coordinate frame names would match on either side of the variable when used in multiplication:
