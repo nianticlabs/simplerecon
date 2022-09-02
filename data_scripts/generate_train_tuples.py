@@ -29,6 +29,9 @@
     {tuple_info_file_location}/{split}{mv_split_filesuffix}
 
     This file uses the defaults for frame distances from DVMVS.
+
+    This module also borrows the main tuple generation function from
+    the DeepVideoMVS repo https://github.com/ardaduz/deep-video-mvs 
 """
 
 import copy
