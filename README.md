@@ -385,7 +385,7 @@ The first is `visualization_scripts/visualize_scene_depth_output.py`. This will 
 
 ```shell
 # Example command to get visualizations for dense frames
-CUDA_VISIBLE_DEVICES=0 python test.py --name HERO_MODEL \
+CUDA_VISIBLE_DEVICES=0 python ./visualization_scripts/visualize_scene_depth_output.py --name HERO_MODEL \
             --output_base_path OUTPUT_PATH \
             --data_config configs/data/scannet_dense_test.yaml \
             --num_workers 8;
