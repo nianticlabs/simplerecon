@@ -316,8 +316,13 @@ def main(opts):
                 # export image
                 output_image_list.append(final_image_np)
 
-            save_viz_video_frames(output_image_list, 
-                                    os.path.join(viz_output_dir, f"{scan}.mp4"))
+            fps = (opts.standard_fps if opts.skip_frames is None 
+                                else round(opts.standard_fps/opts.skip_frames))
+            save_viz_video_frames(
+                                output_image_list, 
+                                os.path.join(viz_output_dir, f"{scan}.mp4"),
+                                fps=fps,
+                            )
 
 if __name__ == '__main__':
     # don't need grad for test.
