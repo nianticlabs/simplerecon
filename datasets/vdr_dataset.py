@@ -421,7 +421,7 @@ class VDRDataset(GenericMVSDataset):
                                 np.fromfile(
                                     full_res_depth_filepath, dtype=np.float32
                                 ).reshape(-1, self.native_depth_width)
-                            )
+                            ).unsqueeze(0)
 
         confidence_filepath = self.get_full_res_confidence_filepath(scan_id,
                                                                     frame_id)
@@ -429,7 +429,7 @@ class VDRDataset(GenericMVSDataset):
         conf = torch.from_numpy(
                     np.fromfile(
                         confidence_filepath, dtype=np.uint8
-                        ).reshape(-1, self.native_depth_width))
+                        ).reshape(-1, self.native_depth_width)).unsqueeze(0)
         
         full_res_mask_b = conf != 0
         full_res_mask = full_res_mask_b.float()
@@ -463,13 +463,13 @@ class VDRDataset(GenericMVSDataset):
             depth = torch.from_numpy(
                         np.fromfile(depth_filepath, dtype=np.float32
                                 ).reshape(-1, self.depth_width)
-                    )
+                    ).unsqueeze(0)
         else:
             depth_filepath = self.get_full_res_depth_filepath(scan_id, frame_id)
             depth = torch.from_numpy(
                         np.fromfile(depth_filepath, dtype=np.float32
                                 ).reshape(-1, self.native_depth_width)
-                    )
+                    ).unsqueeze(0)
 
             depth = F.interpolate(
                             depth, 
@@ -485,14 +485,14 @@ class VDRDataset(GenericMVSDataset):
             conf = torch.from_numpy(
                         np.fromfile(confidence_filepath, dtype=np.uint8
                             ).reshape(-1, self.depth_width)
-                        )
+                        ).unsqueeze(0)
         else:
             confidence_filepath = self.get_full_res_confidence_filepath(scan_id, 
                                                                     frame_id)
             conf = torch.from_numpy(
                         np.fromfile(confidence_filepath, dtype=np.uint8
                             ).reshape(-1, self.native_depth_width)
-                        )
+                        ).unsqueeze(0)
 
             conf = F.interpolate(
                             conf,
