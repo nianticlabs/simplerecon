@@ -20,6 +20,27 @@ class ColmapDataset(GenericMVSDataset):
     self.capture_poses is a dictionary indexed with a scan's id and is populated
     with a scan's pose information when a frame is loaded from that scan.
 
+    This class expects each scan's directory to be a COLMAP working directory 
+    with an undistorted image renconstruction folder.
+
+    Expected hierarchy: 
+
+    dataset_path:
+        scans.txt (contains list of scans, you can define a different filepath)
+        tuples (dir where you store tuples, you can define a different directory)
+        scans:
+            scan_1:
+                undistored:
+                    images:
+                        img1.jpg (undistored image from COLMAP)
+                        img2.jpg
+                        ...
+                        imgN.jpg
+                    sparse:
+                        cameras.txt: SIMPLE_PINHOLE camera text file with intrinsics.
+                        images.txt: text file output with image poses. 
+                valid_frames.txt (generated when you run tuple scripts)
+
     This class does not load depth, instead returns dummy data.
 
     Inherits from GenericMVSDataset and implements missing methods.
@@ -118,7 +139,7 @@ class ColmapDataset(GenericMVSDataset):
 
     @staticmethod
     def get_sub_folder_dir(split):
-        return ""
+        return "scans"
 
     def get_frame_id_string(self, frame_id):
         """ Returns an id string for this frame_id that's unique to this frame
@@ -128,6 +149,15 @@ class ColmapDataset(GenericMVSDataset):
             on disk.
         """
         return frame_id
+
+    def get_valid_frame_path(self, split, scan):
+        """ returns the filepath of a file that contains valid frame ids for a 
+            scan. """
+
+        scan_dir = os.path.join(self.dataset_path, 
+                            self.get_sub_folder_dir(split), scan)
+
+        return os.path.join(scan_dir, "valid_frames.txt")
 
     def get_valid_frame_ids(self, split, scan, store_computed=True):
         """ Either loads or computes the ids of valid frames in the dataset for
@@ -161,21 +191,8 @@ class ColmapDataset(GenericMVSDataset):
             print(f"Compuiting valid frames for scene {scan}.")
             # find out which frames have valid poses 
 
-            #get scannet directories
-            scan_dir = os.path.join(self.dataset_path, 
-                                        self.get_sub_folder_dir(split), scan)
-            
+            # load capture poses for this scan            
             self.load_capture_poses(scan)
-            
-            meta_file_path = os.path.join(scan_dir, scan + ".txt")
-            with open(meta_file_path, 'r') as f:
-                meta_info_lines = f.readlines()
-                meta_info_lines = [line.split(' = ') for line in 
-                                                                meta_info_lines]
-                meta_data = {key: val for key, val in meta_info_lines}
-
-            # fetch total number of color files
-            color_file_count = int(meta_data["numColorFrames"].strip())
 
             bad_file_count = 0
             valid_frames = []
@@ -194,7 +211,7 @@ class ColmapDataset(GenericMVSDataset):
                 valid_frames.append(f"{scan} {frame_id}")
 
             print(f"Scene {scan} has {bad_file_count} bad frame files out of "
-                f"{color_file_count}.")
+                f"{len(self.capture_poses[scan])}.")
 
             # store computed if we're being asked, but wrapped inside a try 
             # incase this directory is read only.
@@ -315,6 +332,7 @@ class ColmapDataset(GenericMVSDataset):
                     p2 = float(els[11])
                 else:
                     print("unknown camera model ", els[1])
+
         # images are assumed undistored, so using simple pinhole.
         fx = fl_x
         fy = fl_y
