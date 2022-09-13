@@ -60,8 +60,8 @@ With larger batches speed increases considerably. With batch size 8 on the non-s
 We've now included two scans for people to try out immediately with the code. You can download these scans [from here](https://drive.google.com/file/d/1x-auV7vGCMdu5yZUMPcoP83p77QOuasT/view?usp=sharing).
 
 Steps:
-1. Download weights for the hero_model into the weights directory.
-2. Download the scans and unzip them to a directory if your choosing.
+1. Download weights for the `hero_model` into the weights directory.
+2. Download the scans and unzip them to a directory of your choosing.
 3. Modify the value for the option `dataset_path` in `configs/data/vdr_dense.yaml` to the base path of the unzipped vdr folder.
 4. You should be able to run it! Something like this will work:
 
