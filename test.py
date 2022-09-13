@@ -37,8 +37,6 @@
         walled mesh.
     2) '--depth_fuser open3d' will use the open3d depth fuser. This fuser 
         supports color and you can enable this by using the '--fuse_color' flag. 
-        This fuser does NOT support batch_size > 1, and will raise an exception
-        if you used with higher batch sizes.
     
     By default, depth maps will be clipped to 3m for fusion and a tsdf 
     resolution of 0.04m3 will be used, but you can change that by changing both 
@@ -147,11 +145,6 @@ def main(opts):
             mesh_output_folder_name = mesh_output_folder_name + "_color"
         if opts.fusion_use_raw_lowest_cost:
             mesh_output_folder_name = mesh_output_folder_name + "_raw_cv"
-
-        if opts.depth_fuser == "open3d":
-            if opts.batch_size != 1:
-                raise Exception("WARNING: fusing depths using open3d is only "
-                    "supported for one frame at a time. Set batch_size to 1.")
 
         mesh_output_dir = os.path.join(results_path, "meshes", 
                                                         mesh_output_folder_name)

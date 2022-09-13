@@ -1,9 +1,9 @@
 import numpy as np
 import open3d as o3d
 import torch
-import torchvision.transforms.functional as TF
 import trimesh
 from datasets.scannet_dataset import ScannetDataset
+from utils.generic_utils import reverse_imagenet_normalize
 
 from tools.tsdf import TSDF, TSDFFuser
 
@@ -120,55 +120,59 @@ class Open3DFuser(DepthFuser):
             cam_T_world_b44, 
             color_b3hw,
         ):
-        if depths_b1hw.shape[0] > 1:
-            raise Exception("Panic! Open3DFuser abstraction doesn't support "
-                "more than one frame. Fix me first before running batched.")
 
         width = depths_b1hw.shape[-1]
         height = depths_b1hw.shape[-2]
 
         if self.fuse_color:
-            image_i = torch.nn.functional.interpolate(color_b3hw, 
-                                                        size=(height, width))[0]
-            image_i = TF.normalize(
-            tensor=image_i,
-            mean=(-2.11790393, -2.03571429, -1.80444444),
-            std=(4.36681223, 4.46428571, 4.44444444)).permute(1,2,0)
+            color_b3hw = torch.nn.functional.interpolate(
+                                                    color_b3hw,
+                                                    size=(height, width),
+                                                )
+            color_b3hw = reverse_imagenet_normalize(color_b3hw)
             
-            color_im = (image_i * 255).cpu().numpy().astype(np.uint8
-                                                            ).copy(order='C') 
-        else:
-            color_im = depths_b1hw.squeeze().cpu().clone().numpy()
-            color_im = np.repeat(
-                            color_im[:, :, np.newaxis] * 255, 
-                            3,
-                            axis=2
-                        ).astype(np.uint8)
+        for batch_index in range(depths_b1hw.shape[0]):
+            if self.fuse_color:
+                image_i = color_b3hw[batch_index].permute(1,2,0)
 
-        depth_pred = depths_b1hw.squeeze().cpu().clone().numpy()
-        depth_pred = o3d.geometry.Image(depth_pred)
-        color_im = o3d.geometry.Image(color_im)
-        rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(
-                                        color_im, 
-                                        depth_pred, 
-                                        depth_scale=1.0,
-                                        depth_trunc=self.fusion_max_depth,
-                                        convert_rgb_to_intensity=False,
-                                    )
-        cam_intr = K_b44.squeeze().cpu().clone().numpy()
-        cam_T_world_44 = cam_T_world_b44.squeeze().cpu().clone().numpy()
-        
-        self.volume.integrate(
-            rgbd,
-            o3d.camera.PinholeCameraIntrinsic(
-                width=width, 
-                height=height, fx=cam_intr[0, 0], 
-                fy=cam_intr[1, 1],
-                cx=cam_intr[0, 2],
-                cy=cam_intr[1, 2]
-            ),
-            cam_T_world_44,
-        )
+                color_im = (image_i * 255).cpu().numpy().astype(
+                                                            np.uint8
+                                                        ).copy(order='C')
+            else:
+                # mesh will now be grey
+                color_im = 0.7*torch.ones_like(
+                                    depths_b1hw[batch_index]
+                                ).squeeze().cpu().clone().numpy()
+                color_im = np.repeat(
+                                color_im[:, :, np.newaxis] * 255, 
+                                3,
+                                axis=2
+                            ).astype(np.uint8)
+
+            depth_pred = depths_b1hw[batch_index].squeeze().cpu().clone().numpy()
+            depth_pred = o3d.geometry.Image(depth_pred)
+            color_im = o3d.geometry.Image(color_im)
+            rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(
+                                            color_im, 
+                                            depth_pred, 
+                                            depth_scale=1.0,
+                                            depth_trunc=self.fusion_max_depth,
+                                            convert_rgb_to_intensity=False,
+                                        )
+            cam_intr = K_b44[batch_index].cpu().clone().numpy()
+            cam_T_world_44 = cam_T_world_b44[batch_index].cpu().clone().numpy()
+            
+            self.volume.integrate(
+                rgbd,
+                o3d.camera.PinholeCameraIntrinsic(
+                    width=width, 
+                    height=height, fx=cam_intr[0, 0], 
+                    fy=cam_intr[1, 1],
+                    cx=cam_intr[0, 2],
+                    cy=cam_intr[1, 2]
+                ),
+                cam_T_world_44,
+            )
 
     def export_mesh(self, path, use_marching_cubes_mask=None):
         o3d.io.write_triangle_mesh(path, self.volume.extract_triangle_mesh())

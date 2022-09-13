@@ -234,8 +234,6 @@ fusers
     can set the export_single_mesh to `False` for call to `export_mesh` in `test.py`.
 2) `--depth_fuser open3d` will use the open3d depth fuser. This fuser 
     supports color and you can enable this by using the `--fuse_color` flag. 
-    This fuser does NOT support `--batch_size` > 1, and will raise an exception
-    if you use a higher batch_size.
 
 By default, depth maps will be clipped to 3m for fusion and a tsdf 
 resolution of 0.04m<sup>3</sup> will be used, but you can change that by changing both 
@@ -379,7 +377,7 @@ See `options.py` for the range of other training options, such as learning rates
 
 ## ✨ Visualization
 
-Other than quick depth visualization in the `test.py` script, there are two scripts for visualizign depth output. 
+Other than quick depth visualization in the `test.py` script, there are two scripts for visualizing depth output. 
 
 The first is `visualization_scripts/visualize_scene_depth_output.py`. This will produce a video with color images of the reference and source frames, depth prediction, cost volume estimate, GT depth, and estimated normals from depth. The script assumes you have cached depth output using `test.py` and accepts the same command template format as `test.py`:
 
