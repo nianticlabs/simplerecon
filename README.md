@@ -78,9 +78,9 @@ CUDA_VISIBLE_DEVICES=0 python test.py --name HERO_MODEL \
             --dump_depth_visualization;
 ```
 
-This will output meshes, quick depth viz, and socres when benchmarked against LiDAR depth under `OUTPUT_PATH`.
+This will output meshes, quick depth viz, and socres when benchmarked against LiDAR depth under `OUTPUT_PATH`. You can also use `dense_offline` frames by instead using `vdr_dense_offline.yaml`.
 
-See the section below on testing and evaluation. Make sure to use the correct config flags for datasets.
+See the section below on testing and evaluation. Make sure to use the correct config flags for datasets. 
 
 ## 💾 ScanNetv2 Dataset
 
