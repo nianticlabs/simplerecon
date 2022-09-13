@@ -50,8 +50,37 @@ With larger batches speed increases considerably. With batch size 8 on the non-s
 ~40ms.
 
 ## 📝 TODOs:
-- [ ] Simple scan for folks to quickly try the code, instead of downloading the ScanNetv2 test scenes.
+- [x] Simple scan for folks to quickly try the code, instead of downloading the ScanNetv2 test scenes.
 - [ ] FPN model weights.
+
+## 🏃 Running out of the box!
+
+We've now included two scans for people to try out immediately with the code. You can download these scans [from here](https://drive.google.com/file/d/1x-auV7vGCMdu5yZUMPcoP83p77QOuasT/view?usp=sharing).
+
+Steps:
+1. Download weights for the hero_model into the weights directory.
+2. Download the scans and unzip them to a directory if your choosing.
+3. Modify the value for the option `dataset_path` in `configs/data/vdr_dense.yaml` to the base path of the unzipped vdr folder.
+4. You should be able to run it! Something like this will work:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python test.py --name HERO_MODEL \
+            --output_base_path OUTPUT_PATH \
+            --config_file configs/models/hero_model.yaml \
+            --load_weights_from_checkpoint weights/hero_model.ckpt \
+            --data_config configs/data/vdr_dense.yaml \
+            --num_workers 8 \
+            --batch_size 2 \
+            --fast_cost_volume \
+            --run_fusion \
+            --depth_fuser open3d \
+            --fuse_color \
+            --dump_depth_visualization;
+```
+
+This will output meshes, quick depth viz, and socres when benchmarked against LiDAR depth under `OUTPUT_PATH`.
+
+See the section below on testing and evaluation. Make sure to use the correct config flags for datasets.
 
 ## 💾 ScanNetv2 Dataset
 

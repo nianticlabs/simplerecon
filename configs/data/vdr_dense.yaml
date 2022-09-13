@@ -1,5 +1,5 @@
 !!python/object:options.Options
-dataset_path: /media/data/mosayed/datasets/vdr_rel
+dataset_path: /media/data/mosayed/datasets/vdr
 tuple_info_file_location: data_splits/vdr/
 dataset_scan_split_file: data_splits/vdr/scans.txt
 dataset: vdr
