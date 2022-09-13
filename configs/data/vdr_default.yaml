@@ -3,7 +3,7 @@ dataset_path: /media/data/mosayed/datasets/vdr
 tuple_info_file_location: data_splits/vdr/
 dataset_scan_split_file: data_splits/vdr/scans.txt
 dataset: vdr
-mv_tuple_file_suffix: _eight_view_deepvmvs_dense_offline.txt
+mv_tuple_file_suffix: _eight_view_deepvmvs.txt
 num_images_in_tuple: 8
-frame_tuple_type: dense_offline
+frame_tuple_type: default
 split: test
