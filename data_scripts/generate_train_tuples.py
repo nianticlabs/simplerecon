@@ -253,7 +253,7 @@ def crawl_subprocess_long(opts_temp_filepath, scan, count, progress):
                                 opts.dataset, 
                                 opts.dataset_scan_split_file, 
                                 opts.single_debug_scan_id,
-                                erbose=False,
+                                verbose=False,
                             )
 
     ds = dataset_class(
