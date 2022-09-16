@@ -4,7 +4,7 @@ This is the reference PyTorch implementation for training and testing MVS depth 
 
 > **SimpleRecon: 3D Reconstruction Without 3D Convolutions**
 >
-> [Mohamed Sayed](masayed.com), [John Gibson](https://www.linkedin.com/in/john-e-gibson-ii/), [Jamie Whatson](https://www.linkedin.com/in/jamie-watson-544825127/), [Victor Adrian Prisacariu](https://www.robots.ox.ac.uk/~victor/), [Michael Firman](http://www.michaelfirman.co.uk), and [Clément Godard](http://www0.cs.ucl.ac.uk/staff/C.Godard/)
+> [Mohamed Sayed](https://masayed.com), [John Gibson](https://www.linkedin.com/in/john-e-gibson-ii/), [Jamie Whatson](https://www.linkedin.com/in/jamie-watson-544825127/), [Victor Adrian Prisacariu](https://www.robots.ox.ac.uk/~victor/), [Michael Firman](http://www.michaelfirman.co.uk), and [Clément Godard](http://www0.cs.ucl.ac.uk/staff/C.Godard/)
 >
 > [Paper, ECCV 2022 (arXiv pdf)](https://arxiv.org/abs/2208.14743), [Supplemental Material](https://nianticlabs.github.io/simplerecon/resources/SimpleRecon_supp.pdf), [Project Page](https://nianticlabs.github.io/simplerecon/)
 
