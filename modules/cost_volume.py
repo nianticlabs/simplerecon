@@ -9,6 +9,7 @@ from utils.generic_utils import combine_dims, tensor_B_to_bM, tensor_bM_to_B
 from utils.geometry_utils import (BackprojectDepth, Project3D, get_camera_rays,
                                   pose_distance)
 
+
 class CostVolumeManager(nn.Module):
 
     """
@@ -21,6 +22,7 @@ class CostVolumeManager(nn.Module):
     reference feature, before summing over source views at each pixel location. 
     The final tensor is size batch_size x num_depths x H x  W tensor.
     """
+
 
     def __init__(
             self, 
@@ -94,6 +96,7 @@ class CostVolumeManager(nn.Module):
 
         return mask
 
+
     def generate_depth_planes(self, batch_size: int, 
                                 min_depth: Tensor, max_depth: Tensor) -> Tensor:
         """
@@ -136,7 +139,7 @@ class CostVolumeManager(nn.Module):
     def warp_features(
                     self, 
                     src_feats, 
-                    src_poses, 
+                    src_extrinsics, 
                     src_Ks, 
                     cur_invK, 
                     depth_plane_b1hw, 
@@ -153,7 +156,9 @@ class CostVolumeManager(nn.Module):
             src_feats: source image matching features - B x num_src_frames x C x 
                 H x W where H and W should be self.matching_height and 
                 self.matching_width
-            src_poses: source image camera poses - B x num_src_frames x 4 x 4.
+            src_extrinsics: source image camera extrinsics w.r.t the current cam 
+                - B x num_src_frames x 4 x 4. Will tranform from current camera
+                coordinate frame to a source frame's coordinate frame.
             src_Ks: source image inverse intrinsics - B x num_src_frames x 4 x 4
             cur_invK: current image inverse intrinsics - B x 4 x 4
             depth_plane_b1hw: depth plane to use for every spatial location. For 
@@ -172,14 +177,18 @@ class CostVolumeManager(nn.Module):
             mask: depth mask where 1.0 indicated that the point projected to the
                 source view is infront of the view.
         """
+        
+        # backproject points at that depth plane to the world, where the 
+        # world is really the current view.
         world_points_b4N = self.backprojector(depth_plane_b1hw, cur_invK)
         world_points_B4N = world_points_b4N.repeat_interleave(num_src_frames, 
                                                                         dim=0)
-
+        
+        # project these points down to each source frame
         cam_points_B3N = self.projector(
                                     world_points_B4N, 
                                     src_Ks.view(-1, 4, 4), 
-                                    src_poses.view(-1, 4, 4)
+                                    src_extrinsics.view(-1, 4, 4)
                                 )
 
         cam_points_B3hw = cam_points_B3N.view(-1, 3, self.matching_height, 
@@ -224,12 +233,13 @@ class CostVolumeManager(nn.Module):
                              
         return world_points_B4N, depths, src_feat_warped, mask
 
+
     def build_cost_volume(
                         self, 
                         cur_feats: Tensor,
                         src_feats: Tensor,
+                        src_extrinsics: Tensor,
                         src_poses: Tensor,
-                        inv_src_poses: Tensor,
                         src_Ks: Tensor,
                         cur_invK: Tensor,
                         min_depth: Tensor,
@@ -248,9 +258,12 @@ class CostVolumeManager(nn.Module):
             src_feats: source image matching features - B x num_src_frames x C x 
                 H x W where H and W should be self.matching_height and 
                 self.matching_width
-            src_poses: source image camera poses - B x num_src_frames x 4 x 4.
-            inv_src_poses: inverse source image camera poses - B x 
-                num_src_frames x 4 x 4.
+            src_extrinsics: source image camera extrinsics w.r.t the current cam 
+                - B x num_src_frames x 4 x 4. Will tranform from current camera
+                coordinate frame to a source frame's coordinate frame.
+            src_poses: source image camera poses w.r.t the current camera - B x 
+                num_src_frames x 4 x 4. Will tranform from a source camera's
+                coordinate frame to the current frame'ss coordinate frame.
             src_Ks: source image inverse intrinsics - B x num_src_frames x 4 x 4
             cur_invK: current image inverse intrinsics - B x 4 x 4
             min_depth: minimum depth to use at the nearest depth plane.
@@ -270,15 +283,15 @@ class CostVolumeManager(nn.Module):
                 view's feature against. 
         """
 
-        del inv_src_poses, return_mask
+        del src_poses, return_mask
 
         batch_size, num_src_frames, num_feat_channels, _, _ = src_feats.shape
 
         uv_scale = torch.tensor(
                                 [1 / self.matching_width, 
                                 1 / self.matching_height], 
-                                dtype=src_poses.dtype, 
-                                device=src_poses.device
+                                dtype=src_extrinsics.dtype, 
+                                device=src_extrinsics.device
                             ).view(1, 1, 1, 2)
 
         if depth_planes_bdhw is None:
@@ -294,7 +307,7 @@ class CostVolumeManager(nn.Module):
             depth_plane_b1hw = depth_planes_bdhw[:, depth_id].unsqueeze(1)
             _, _, src_feat_warped, mask = self.warp_features(
                                                         src_feats, 
-                                                        src_poses, 
+                                                        src_extrinsics, 
                                                         src_Ks, 
                                                         cur_invK, 
                                                         depth_plane_b1hw, 
@@ -321,18 +334,20 @@ class CostVolumeManager(nn.Module):
 
         return cost_volume, depth_planes_bdhw, None
 
+
     def indices_to_disparity(self, indices, depth_planes_bdhw):
         """ Convert cost volume indices to 1/depth for visualisation """
         depth = torch.gather(depth_planes_bdhw, dim=1, 
                                         index=indices.unsqueeze(1)).squeeze(1)
         return depth
 
+
     def forward(
             self, 
             cur_feats, 
             src_feats, 
+            src_extrinsics, 
             src_poses, 
-            inv_src_poses, 
             src_Ks, 
             cur_invK, 
             min_depth, 
@@ -345,10 +360,10 @@ class CostVolumeManager(nn.Module):
                         self.build_cost_volume(
                                         cur_feats=cur_feats,
                                         src_feats=src_feats,
-                                        src_poses=src_poses,
+                                        src_extrinsics=src_extrinsics,
                                         src_Ks=src_Ks,
                                         cur_invK=cur_invK,
-                                        inv_src_poses=inv_src_poses,
+                                        src_poses=src_poses,
                                         min_depth=min_depth,
                                         max_depth=max_depth,
                                         depth_planes_bdhw=depth_planes_bdhw,
@@ -364,6 +379,7 @@ class CostVolumeManager(nn.Module):
 
         return cost_volume, lowest_cost, depth_planes_bdhw, overall_mask_bhw
 
+
 class FeatureVolumeManager(CostVolumeManager):
 
     """
@@ -377,6 +393,7 @@ class FeatureVolumeManager(CostVolumeManager):
     batch_size x num_depths x H x  W tensor.
 
     """
+
 
     def __init__(self, 
                 matching_height, 
@@ -434,8 +451,8 @@ class FeatureVolumeManager(CostVolumeManager):
     def build_cost_volume(self, 
                         cur_feats: Tensor,
                         src_feats: Tensor,
+                        src_extrinsics: Tensor,
                         src_poses: Tensor,
-                        inv_src_poses: Tensor,
                         src_Ks: Tensor,
                         cur_invK: Tensor,
                         min_depth: Tensor,
@@ -455,9 +472,12 @@ class FeatureVolumeManager(CostVolumeManager):
             src_feats: source image matching features - B x num_src_frames x C x 
                 H x W where H and W should be self.matching_height and 
                 self.matching_width
-            src_poses: source image camera poses - B x num_src_frames x 4 x 4.
-            inv_src_poses: inverse source image camera poses - B x 
-                num_src_frames x 4 x 4.
+            src_extrinsics: source image camera extrinsics w.r.t the current cam 
+                - B x num_src_frames x 4 x 4. Will tranform from current camera
+                coordinate frame to a source frame's coordinate frame.
+            src_poses: source image camera poses w.r.t the current camera - B x 
+                num_src_frames x 4 x 4. Will tranform from a source camera's
+                coordinate frame to the current frame'ss coordinate frame.
             src_Ks: source image inverse intrinsics - B x num_src_frames x 4 x 4
             cur_invK: current image inverse intrinsics - B x 4 x 4
             min_depth: minimum depth to use at the nearest depth plane.
@@ -482,8 +502,8 @@ class FeatureVolumeManager(CostVolumeManager):
 
         uv_scale = torch.tensor(
                         [1 / self.matching_width, 1 / self.matching_height], 
-                        dtype=src_poses.dtype, 
-                        device=src_poses.device,
+                        dtype=src_extrinsics.dtype, 
+                        device=src_extrinsics.device,
                     ).view(1, 1, 1, 2)
 
         # construct depth planes if need be.
@@ -494,7 +514,7 @@ class FeatureVolumeManager(CostVolumeManager):
 
         # get poses distances
         frame_pose_dist_B, r_measure_B, t_measure_B = pose_distance(
-                                                tensor_bM_to_B(inv_src_poses)
+                                                tensor_bM_to_B(src_poses)
                                             )
 
         # shape all pose distance tensors.
@@ -539,7 +559,8 @@ class FeatureVolumeManager(CostVolumeManager):
             # current depth plane
             depth_plane_b1hw = depth_planes_bdhw[:, depth_id].unsqueeze(1)
             
-            # backproject points at that depth plane to the world
+            # backproject points at that depth plane to the world, where the 
+            # world is really the current view.
             world_points_b4N = self.backprojector(depth_plane_b1hw, cur_invK)
             world_points_B4N = world_points_b4N.repeat_interleave(
                                                         num_src_frames, dim=0)
@@ -548,7 +569,7 @@ class FeatureVolumeManager(CostVolumeManager):
             cam_points_B3N = self.projector(
                                         world_points_B4N, 
                                         src_Ks.view(-1, 4, 4), 
-                                        src_poses.view(-1, 4, 4)
+                                        src_extrinsics.view(-1, 4, 4)
                                     )
 
             cam_points_B3hw = cam_points_B3N.view(
@@ -630,9 +651,9 @@ class FeatureVolumeManager(CostVolumeManager):
                                 batch_size=batch_size, num_views=num_src_frames)
             
             # compute rays for world points source frame 
-            inv_src_poses_B44 = tensor_bM_to_B(inv_src_poses)
+            src_poses_B44 = tensor_bM_to_B(src_poses)
             src_points_rays_B3hw = get_camera_rays(
-                                                inv_src_poses_B44,
+                                                src_poses_B44,
                                                 world_points_B4N[:,:3,:],
                                                 in_camera_frame=False
                                             ).view(-1, 
@@ -714,6 +735,7 @@ class FeatureVolumeManager(CostVolumeManager):
 
         return feature_volume, depth_planes_bdhw, overall_mask_bhw
 
+
     def to_fast(self) -> 'FastFeatureVolumeManager':
         manager = FastFeatureVolumeManager(
             self.matching_height,
@@ -723,6 +745,7 @@ class FeatureVolumeManager(CostVolumeManager):
         manager.mlp = self.mlp
         return manager
 
+
 class FastFeatureVolumeManager(FeatureVolumeManager):
     """
     Class to build a feature volume from extracted features of an input 
@@ -731,6 +754,7 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
     See FeatureVolumeManager for a full description. This class is much more 
     efficient in time, but worse for traning memory.
     """
+
 
     def __init__(self,
                 matching_height, 
@@ -784,10 +808,11 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
         print(f"".center(80, "#"))
         print("")
 
+
     def warp_features(
                     self,
                     src_feats,
-                    src_poses,
+                    src_extrinsics,
                     src_Ks,
                     cur_invK,
                     depth_plane_bdhw,
@@ -804,7 +829,9 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
             src_feats: source image matching features - B x num_src_frames x C x 
                 H x W where H and W should be self.matching_height and 
                 self.matching_width
-            src_poses: source image camera poses - B x num_src_frames x 4 x 4.
+            src_extrinsics: source image camera extrinsics w.r.t the current cam 
+                - B x num_src_frames x 4 x 4. Will tranform from current camera
+                coordinate frame to a source frame's coordinate frame.
             src_Ks: source image inverse intrinsics - B x num_src_frames x 4 x 4
             cur_invK: current image inverse intrinsics - B x 4 x 4
             depth_plane_bdhw: depth planes to use for every spatial location. 
@@ -829,6 +856,9 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
         """
         num_depth_planes = depth_plane_bdhw.shape[1]
         depth_plane_B1hw = einops.rearrange(depth_plane_bdhw, 'b d h w -> (b d) 1 h w')
+        
+        # backproject points at that depth plane to the world, where the 
+        # world is really the current view.
         world_points_B4N = self.backprojector(
                                 depth_plane_B1hw,
                                 einops.repeat(cur_invK, 'b i j -> (b d) i j', 
@@ -842,7 +872,7 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
                                     d=num_depth_planes,
                                 )
 
-        # Warp features and reshape
+        # project these points down to each source image
         cam_points_B3N = self.projector(
                                     world_points_B4N,
                                     einops.repeat(
@@ -852,7 +882,7 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
                                                 d=num_depth_planes,
                                             ),
                                     einops.repeat(
-                                                src_poses, 
+                                                src_extrinsics, 
                                                 'b k i j -> (b k d) i j', 
                                                 k=num_src_frames,
                                                 d=num_depth_planes,
@@ -932,13 +962,14 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
                                     )
 
         return world_points_bkd4hw, depths_bkdhw, src_feat_warped_bkdfhw, mask_bkdhw, pix_coords_bkd2hw
-        
+
+
     def build_cost_volume(
                     self, 
                     cur_feats: Tensor,
                     src_feats: Tensor,
+                    src_extrinsics: Tensor,
                     src_poses: Tensor,
-                    inv_src_poses: Tensor,
                     src_Ks: Tensor,
                     cur_invK: Tensor,
                     min_depth: Tensor,
@@ -958,9 +989,12 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
             src_feats: source image matching features - B x num_src_frames x C x 
                 H x W where H and W should be self.matching_height and 
                 self.matching_width
-            src_poses: source image camera poses - B x num_src_frames x 4 x 4.
-            inv_src_poses: inverse source image camera poses - B x 
-                num_src_frames x 4 x 4.
+            src_extrinsics: source image camera extrinsics w.r.t the current cam 
+                - B x num_src_frames x 4 x 4. Will tranform from current camera
+                coordinate frame to a source frame's coordinate frame.
+            src_poses: source image camera poses w.r.t the current camera - B x 
+                num_src_frames x 4 x 4. Will tranform from a source camera's
+                coordinate frame to the current frame'ss coordinate frame.
             src_Ks: source image inverse intrinsics - B x num_src_frames x 4 x 4
             cur_invK: current image inverse intrinsics - B x 4 x 4
             min_depth: minimum depth to use at the nearest depth plane.
@@ -984,8 +1018,8 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
 
         uv_scale = torch.tensor(
                             [1 / self.matching_width, 1 / self.matching_height], 
-                            dtype=src_poses.dtype,
-                            device=src_poses.device,
+                            dtype=src_extrinsics.dtype,
+                            device=src_extrinsics.device,
                         ).view(1, 1, 1, 2)
 
         # construct depth planes if need be.
@@ -997,7 +1031,7 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
 
         # get poses distances
         frame_penalty_B, r_measure_B, t_measure_B = pose_distance(
-                                                tensor_bM_to_B(inv_src_poses)
+                                                tensor_bM_to_B(src_poses)
                                             )
 
         # shape all pose distance tensors.
@@ -1032,7 +1066,7 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
         # get warped and sampled features.
         world_points_bkd4hw, depths_bkdhw, src_feat_warped_bkdchw, mask_bkdhw, pix_coords_bkd2hw = self.warp_features(
             src_feats,
-            src_poses,
+            src_extrinsics,
             src_Ks,
             cur_invK,
             depth_planes_bdhw,
@@ -1072,7 +1106,7 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
         src_points_rays_bkd3hw = F.normalize(
             world_points_bkd4hw[:, :, :, :3] - 
                 einops.repeat(
-                            inv_src_poses[:, :, :3, 3], 
+                            src_poses[:, :, :3, 3], 
                             'b k i -> b k d i h w',
                             d=num_depth_planes, 
                             h=self.matching_height,

@@ -171,13 +171,13 @@ def get_camera_rays(
     return rays_b3N
 
 
-def pose_distance(inv_pose_b44):
+def pose_distance(pose_b44):
     """
     DVMVS frame pose distance.
     """
 
-    R = inv_pose_b44[:, :3, :3]
-    t = inv_pose_b44[:, :3, 3]
+    R = pose_b44[:, :3, :3]
+    t = pose_b44[:, :3, 3]
     R_trace = R.diagonal(offset=0, dim1=-1, dim2=-2).sum(-1)
     R_measure = torch.sqrt(2 * 
                 (1 - torch.minimum(torch.ones_like(R_trace)*3.0, R_trace) / 3))

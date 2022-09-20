@@ -360,8 +360,8 @@ class DepthModel(pl.LightningModule):
         cost_volume, lowest_cost, _, overall_mask_bhw = self.cost_volume(
                                                 cur_feats=matching_cur_feats,
                                                 src_feats=matching_src_feats,
-                                                src_poses=src_cam_T_cur_cam,
-                                                inv_src_poses=cur_cam_T_src_cam,
+                                                src_extrinsics=src_cam_T_cur_cam,
+                                                src_poses=cur_cam_T_src_cam,
                                                 src_Ks=src_K,
                                                 cur_invK=cur_invK,
                                                 min_depth=min_depth,
