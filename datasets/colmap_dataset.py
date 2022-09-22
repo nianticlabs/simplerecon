@@ -288,8 +288,9 @@ class ColmapDataset(GenericMVSDataset):
         """
         output_dict = {}
         
-        scene_path = os.path.join(self.dataset_path, scan_id, "undistorted", 
-                                                                    "sparse")
+        scene_path = os.path.join(self.dataset_path, 
+                                self.get_sub_folder_dir(self.split), 
+                                scan_id, "undistorted", "sparse")
             
         with open(os.path.join(scene_path,"cameras.txt"), "r") as f:
             for line in f:
@@ -502,7 +503,9 @@ class ColmapDataset(GenericMVSDataset):
                 from the dataset.
 
         """
-        scene_path = os.path.join(self.dataset_path, scan_id, "undistorted")
+        scene_path = os.path.join(self.dataset_path, 
+                                self.get_sub_folder_dir(self.split), 
+                                scan_id, "undistorted", "sparse")
         color_path = os.path.join(scene_path, "images_low_res", 
                                                 f"{frame_id}.JPG")
 
@@ -527,7 +530,9 @@ class ColmapDataset(GenericMVSDataset):
                 from the dataset.
 
         """
-        scene_path = os.path.join(self.dataset_path, scan_id, "undistorted")
+        scene_path = os.path.join(self.dataset_path, 
+                                self.get_sub_folder_dir(self.split), 
+                                scan_id, "undistorted", "sparse")
         return os.path.join(scene_path, "images", 
                                             f"{frame_id}.JPG")
 
