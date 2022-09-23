@@ -132,7 +132,12 @@ def main(opts):
                 depths_list.append(upsampled_depth_pred)
 
                 poses_list.append(cur_data["cam_T_world_b44"].clone())
-                K_list.append(cur_data["K_full_depth_b44"].clone())
+                
+                K_33 = cur_data["K_s0_b44"].clone()
+                K_33[:,0] *= (640/depth_pred_s0_b1hw.shape[-1]) 
+                K_33[:,1] *= (480/depth_pred_s0_b1hw.shape[-2])
+
+                K_list.append(K_33.clone())
 
                 cur_data["high_res_color_b3hw"] = F.interpolate(
                                             cur_data["high_res_color_b3hw"], 
