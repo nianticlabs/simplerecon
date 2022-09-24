@@ -137,7 +137,8 @@ class GenericMVSDataset(Dataset):
             # optionally limit frames to just one scan.
             if limit_to_scan_id is not None:
                 self.frame_tuples = [frame_tuple for frame_tuple in 
-                        self.frame_tuples if limit_to_scan_id in frame_tuple]
+                        self.frame_tuples if limit_to_scan_id == 
+                            frame_tuple.split(" ")[0]]
 
             # optionally skip every frame with interval skip_frame 
             if skip_frames is not None:
