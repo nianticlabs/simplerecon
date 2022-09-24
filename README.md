@@ -54,6 +54,7 @@ With larger batches speed increases considerably. With batch size 8 on the non-s
 ## 📝 TODOs:
 - [x] Simple scan for folks to quickly try the code, instead of downloading the ScanNetv2 test scenes.
 - [ ] FPN model weights.
+- [ ] Tutorial on how to use Scanniverse data, ETA 5th October
 
 ## 🏃 Running out of the box!
 
