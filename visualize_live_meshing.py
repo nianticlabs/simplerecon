@@ -163,8 +163,13 @@ def main(opts):
                             with open(pickled_depths_path, 'rb') as handle:
                                 outputs = pickle.load(handle)
                         else:
-                            outputs = model("test", cur_data, src_data, 
-                                        unbatched_matching_encoder_forward=True)
+                            outputs = model(
+                                        "test", 
+                                        cur_data, 
+                                        src_data, 
+                                        unbatched_matching_encoder_forward=True,
+                                        return_mask=True,
+                                    )
                         
                         depth_pred = outputs["depth_pred_s0_b1hw"]
 
@@ -181,8 +186,13 @@ def main(opts):
                         with open(pickled_depths_path, 'rb') as handle:
                             outputs = pickle.load(handle)
                     else:
-                        outputs = model("test", cur_data, src_data, 
-                                        unbatched_matching_encoder_forward=True)
+                        outputs = model(
+                                    "test", 
+                                    cur_data, 
+                                    src_data, 
+                                    unbatched_matching_encoder_forward=True,
+                                    return_mask=True,
+                                )
 
                         if opts.cache_depths:
                             Path(os.path.join(depth_output_dir, 
@@ -204,9 +214,14 @@ def main(opts):
                     depth_pred = outputs["depth_pred_s0_b1hw"]
                     
                     if opts.mask_pred_depth:
+                        overall_mask_b1hw = outputs[    
+                                        "overall_mask_bhw"
+                                    ].cuda().unsqueeze(1).float()
                         overall_mask_b1hw = F.interpolate(
-                                outputs["overall_mask_bhw"].cuda().unsqueeze(1), 
-                                size=(192, 256), mode="nearest").bool()
+                                                overall_mask_b1hw, 
+                                                size=(192, 256), 
+                                                mode="nearest"
+                                            ).bool()
                         depth_pred[~overall_mask_b1hw] = 0
                     
                     color_frame = (cur_data["high_res_color_b3hw"] 
@@ -351,7 +366,10 @@ def main(opts):
             save_viz_video_frames(mesh_render_birdeye_frames, 
                             os.path.join(video_output_dir, 
                             scan.replace("/", "_") + "_birdseye.mp4"), fps=fps)
-
+                            
+            del(dataloader)
+            del(dataset)
+            
 if __name__ == '__main__':
     # don't need grad for test.
     torch.set_grad_enabled(False)
