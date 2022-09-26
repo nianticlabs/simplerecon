@@ -162,7 +162,6 @@ class VDRDataset(GenericMVSDataset):
 
         return valid_frames
         
-    @functools.cache
     def load_pose(self, scan_id, frame_id):
         """ Loads a frame's pose file.
 
