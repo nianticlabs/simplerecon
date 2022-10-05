@@ -823,7 +823,7 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
                 ):
         """
         Warps every soruce view feature to the current view at the depth 
-        plane defined by depth_plane_b1hw.
+        planes defined by depth_plane_bdhw.
 
         Args:
             src_feats: source image matching features - B x num_src_frames x C x 
@@ -845,7 +845,7 @@ class FastFeatureVolumeManager(FeatureVolumeManager):
         Returns:
 
             world_points_bkd4hw: the world points at every backprojected depth 
-                point in depth_plane_b1hw.
+                point in depth_plane_bdhw.
             depths_bkdhw: depths for each projected point in every source views.
             src_feat_warped_bkdfhw: warped source view for every spatial 
                 location at the depth plane.
