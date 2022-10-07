@@ -292,7 +292,7 @@ class TSDFFuser:
 
         # Get the valid points mask
         valid_points_b1N = (vox_depth_b1N > 0) & (dist_b1N > -self.truncation) & \
-            (sampled_depth_b1N > 0) & (vox_depth_b1N > 0) & (vox_depth_b1N < self.max_depth) & \
+            (sampled_depth_b1N > 0) & (vox_depth_b1N < self.max_depth) & \
                 (confidence_b1N > 0)
 
         # Updating the TSDF has to be sequential so we break out the batch here
