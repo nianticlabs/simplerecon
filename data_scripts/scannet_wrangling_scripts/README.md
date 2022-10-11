@@ -44,7 +44,7 @@ python download_scannet.py -o SCANNET_ROOT
 
 For one scan debug use:
 ```
-python download_scannet.py -o SCANNET_ROOT --id scene0707_00
+python download_scannet.py -o SCANNET_ROOT --single_debug_scan_id scene0707_00
 ```
 
 This will download a `.sens` file, `.txt` file, the high resolution mesh `ply`, and a lower resolution mesh `ply`. 
