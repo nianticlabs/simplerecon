@@ -11,7 +11,7 @@ from SensorData import SensorData
 # params
 parser = argparse.ArgumentParser()
 # data paths
-parser.add_argument('--filename', required=True, help='path to sens file to read')
+parser.add_argument('--scannet_root', required=True, help='dataset root')
 parser.add_argument('--scan_list_file', required=False, default=None, help='scan list file')
 parser.add_argument('--single_debug_scan_id', required=False, default=None, help='single scan to debug')
 parser.add_argument('--output_path', required=True, help='path to output folder')
@@ -35,7 +35,7 @@ def process_scan(opt, scan_job, count=None, progress=None):
   if not os.path.exists(output_path):
       os.makedirs(output_path)
   # load the data
-  sys.stdout.write('loading %s...' % opt.filename)
+  sys.stdout.write('loading %s...' % opt.scannet_root)
   sd = SensorData(filename)
   sys.stdout.write('loaded!\n')
   if opt.export_depth_images:
@@ -61,7 +61,7 @@ def main():
     scans = f.readlines()
     scans = [scan.strip() for scan in scans]
   
-  input_files = [os.path.join(opt.filename, f"{scan}/{scan}.sens") for 
+  input_files = [os.path.join(opt.scannet_root, f"{scan}/{scan}.sens") for 
                                         scan in scans]
 
   output_dirs = [os.path.join(opt.output_path, scan) for 
