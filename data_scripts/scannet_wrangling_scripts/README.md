@@ -63,7 +63,7 @@ https://github.com/ScanNet/ScanNet/tree/master/SensReader/python
 
 To extract all scans for test:
 ```
-python reader.py --scannet_root SCANNET_ROOT/scans_test \
+python reader.py --scans_folder SCANNET_ROOT/scans_test \
                  --output_path  OUTPUT_PATH/scans_test \
                  --scan_list_file splits/scannetv2_test.txt \
                  --num_workers 12 \
@@ -74,7 +74,7 @@ python reader.py --scannet_root SCANNET_ROOT/scans_test \
 
 For train and val
 ```
-python reader.py --scannet_root SCANNET_ROOT/scans \
+python reader.py --scans_folder SCANNET_ROOT/scans \
                  --output_path  OUTPUT_PATH/scans \
                  --scan_list_file splits/scannetv2_train.txt \
                  --num_workers 12 \
@@ -82,7 +82,7 @@ python reader.py --scannet_root SCANNET_ROOT/scans \
                  --export_depth_images \
                  --export_color_images;
 
-python reader.py --scannet_root SCANNET_ROOT/scans \
+python reader.py --scans_folder SCANNET_ROOT/scans \
                  --output_path  OUTPUT_PATH/scans \
                  --scan_list_file splits/scannetv2_val.txt \
                  --num_workers 12 \
@@ -98,7 +98,7 @@ For one scan use `--single_debug_scan_id`.
 For caching resized pngs for depth and color files, run:
 
 ```
-python reader.py --scannet_root SCANNET_ROOT/scans \
+python reader.py --scans_folder SCANNET_ROOT/scans \
                  --output_path OUTPUT_PATH/scans \
                  --scan_list_file splits/scannetv2_train.txt \
                  --num_workers 12 \
@@ -111,7 +111,7 @@ python reader.py --scannet_root SCANNET_ROOT/scans \
 and for images at `640x480`:
 
 ```
-python reader.py --scannet_root SCANNET_ROOT/scans \
+python reader.py --scans_folder SCANNET_ROOT/scans \
                  --output_path OUTPUT_PATH/scans \
                  --scan_list_file splits/scannetv2_train.txt \
                  --num_workers 12 \
