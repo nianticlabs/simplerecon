@@ -52,10 +52,10 @@ With larger batches speed increases considerably. With batch size 8 on the non-s
 ~40ms.
 
 ## 📝 TODOs:
-- [x] Simple scan for folks to quickly try the code, instead of downloading the ScanNetv2 test scenes.
+- [x] Simple scan for folks to quickly try the code, instead of downloading the ScanNetv2 test scenes. DONE
 - [ ] FPN model weights.
-- [ ] ScanNetv2 extraction, ETA 10th October
-- [ ] Tutorial on how to use Scanniverse data, ETA ~~5th October~~ 10th October
+- [x] ScanNetv2 extraction, ~~ETA 10th October~~ DONE
+- [ ] Tutorial on how to use Scanniverse data, ETA ~~5th October~~ ~~10th October~~ 20th October
 
 ## 🏃 Running out of the box!
 
@@ -92,9 +92,11 @@ See the section below on testing and evaluation. Make sure to use the correct co
 
 ## 💾 ScanNetv2 Dataset
 
-Please follow the instructions [here](https://github.com/ScanNet/ScanNet) to download the dataset. This dataset is quite big (>2TB), so make sure you have enough space, especially for extracting files.
+~~Please follow the instructions [here](https://github.com/ScanNet/ScanNet) to download the dataset. This dataset is quite big (>2TB), so make sure you have enough space, especially for extracting files.~~
 
-Once downloaded, use this [script](https://github.com/ScanNet/ScanNet/tree/master/SensReader/python) to export raw sensor data to images and depth files.
+~~Once downloaded, use this [script](https://github.com/ScanNet/ScanNet/tree/master/SensReader/python) to export raw sensor data to images and depth files.~~
+
+We've written a quick tutorial and included modified scripts to help you with downloading and extracting ScanNetv2. You can find them at [data_scripts/scannet_wrangling_scripts/](data_scripts/scannet_wrangling_scripts)
 
 You should change the `dataset_path` config argument for ScanNetv2 data configs at `configs/data/` to match where your dataset is.
 
