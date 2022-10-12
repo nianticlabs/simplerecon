@@ -123,7 +123,6 @@ class VDRDataset(GenericMVSDataset):
             with open(valid_frame_path) as f:
                 valid_frames = f.readlines()
         else:
-            valid_frames = []
 
             print(f"Compuiting valid frames for scene {scan}.")
             # find out which frames have valid poses 
@@ -133,6 +132,7 @@ class VDRDataset(GenericMVSDataset):
             color_file_count = len(self.capture_metadata[scan])
 
             valid_frames = []
+            dist_to_last_valid_frame = 0
             bad_file_count = 0
             for frame_ind in range(len(self.capture_metadata[scan])):
                 world_T_cam_44, _ = self.load_pose(scan, frame_ind)
@@ -141,9 +141,11 @@ class VDRDataset(GenericMVSDataset):
                     np.isneginf(np.sum(world_T_cam_44))
                 ):
                     bad_file_count+=1
+                    dist_to_last_valid_frame+=1
                     continue
 
-                valid_frames.append(f"{scan} {frame_ind}")
+                valid_frames.append(f"{scan} {frame_ind} {dist_to_last_valid_frame}")
+                dist_to_last_valid_frame = 0
 
             print(f"Scene {scan} has {bad_file_count} bad frame files out of "
                     f"{color_file_count}.")

@@ -186,6 +186,7 @@ class ARKitDataset(GenericMVSDataset):
             valid_frames = []
 
             bad_file_count = 0
+            dist_to_last_valid_frame = 0
             for frame_id in all_frame_ids:
 
                 try:
@@ -205,15 +206,18 @@ class ARKitDataset(GenericMVSDataset):
                         np.isinf(np.sum(world_T_cam)) or 
                         np.isneginf(np.sum(world_T_cam))
                     ):
+                        dist_to_last_valid_frame+=1
                         bad_file_count+=1
                         continue
 
                 except:
                     if not os.path.isfile(color_filename):
+                        dist_to_last_valid_frame+=1
                         bad_file_count+=1
                         continue
 
-                valid_frames.append(scan + " " + str(frame_id))
+                valid_frames.append(f"{scan} {frame_id} {dist_to_last_valid_frame}")
+                dist_to_last_valid_frame = 0
 
             print(f"Scene {scan} has {bad_file_count} bad frame files "
                 f"out of {len(all_frame_ids)}.")

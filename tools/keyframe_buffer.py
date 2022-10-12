@@ -96,12 +96,24 @@ class KeyframeBuffer:
             t_penalty = np.abs(t_diff) ** degree
         return R_penalty + t_penalty
 
-    def try_new_keyframe(self, pose, image, index=None):
+    def try_new_keyframe(self, pose, image, dist_to_last_valid=None, index=None):
         if self.__store_return_indices and index is None:
             raise ValueError("Storing and returning the frame indices is "
                             f"requested in the constructor, but index=None is "
                             f"passed to the function")
 
+        # In case valid frames are used, this helps guess if a gap in tracking 
+        # when using valid frames and the indices are not indicative of time.
+        if (dist_to_last_valid is not None and dist_to_last_valid > 30):
+            self.buffer.clear()
+            self.__tracking_lost_counter = 0
+            if self.__store_return_indices:
+                self.buffer.append((pose, image, index))
+            else:
+                self.buffer.append((pose, image))
+            
+            return 3
+            
         if is_pose_available(pose):
             self.__tracking_lost_counter = 0
             if len(self.buffer) == 0:

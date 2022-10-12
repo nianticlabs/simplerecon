@@ -156,7 +156,7 @@ def compute_offline_tuple(
 
     return sample
 
-def default_dvmvs_tuples(scan, poses, n_measurement_frames):
+def default_dvmvs_tuples(scan, poses, dists_to_last_valid, n_measurement_frames):
     """
     Creates a list of default DVMVS tuples for a scan's poses. Only tuples at 
     keyframes will be returned. Each tuple will be online (frames will be behind
@@ -167,6 +167,9 @@ def default_dvmvs_tuples(scan, poses, n_measurement_frames):
     Args:
         scan: scan id string.
         poses: a list of poses.
+        dists_to_last_valid: list with distances from each current valid frame 
+            to the last valid frame. Pass Nones if you you're passing invalid 
+            poses and want the DVMVS keyframe handler to take care of them.
         n_measurement_frames: number of measurement (source) frames required for
             each tuple. Total number of frames in the tuple is 
             n_measurement_frames+1
@@ -192,7 +195,7 @@ def default_dvmvs_tuples(scan, poses, n_measurement_frames):
 
         # POLL THE KEYFRAME BUFFER
         response = keyframe_buffer.try_new_keyframe(
-            reference_pose, None, index=i
+            reference_pose, None, dists_to_last_valid[i], index=i
         )
         if response == 3:
             print("Tracking lost!")
@@ -432,9 +435,26 @@ def crawl_subprocess_long(opts_temp_filepath, scan, count, progress):
     valid_frames = ds.get_valid_frame_ids(opts.split, scan)
     
 
+    try:
+        check_valid_dist = int(valid_frames[0].strip().split(" ")[2])
+    except:
+        if opts.frame_tuple_type == "default":
+            print(f"\nWARNING: Couldn't find max valid distances in the valid_frames "
+                f"file for scan {scan}. Please delete existing valid_frames.txt "
+                f"and rerun to regenerate valid frames. "
+                f"There's a difference of 9 extra frames out of 25599 for the "
+                f"ScanNetv2 test set.\n")
+
+    dists_to_last_valid = []
+
     frame_ind_to_frame_id = {}
     for frame_ind, frame_line in enumerate(valid_frames):
         frame_ind_to_frame_id[frame_ind] = frame_line.strip().split(" ")[1]
+        try:
+            dists_to_last_valid.append(int(frame_line.strip().split(" ")[2]))
+        except:
+            # just add Noness
+            dists_to_last_valid.append(None)
 
     poses = []
     for frame_ind in range(len(valid_frames)):
@@ -446,7 +466,7 @@ def crawl_subprocess_long(opts_temp_filepath, scan, count, progress):
     n_measurement_frames = subsequence_length - 1
 
     if opts.frame_tuple_type == "default":
-        samples = default_dvmvs_tuples(scan, poses, n_measurement_frames)
+        samples = default_dvmvs_tuples(scan, poses, dists_to_last_valid, n_measurement_frames)
     elif opts.frame_tuple_type == "offline":
         samples = offline_dvmvs_tuples(scan, poses, n_measurement_frames)
     elif opts.frame_tuple_type == "dense":
@@ -475,7 +495,15 @@ def crawl_subprocess_long(opts_temp_filepath, scan, count, progress):
             diff = subsequence_length - len(sampled_indices)
             if diff > len(available_indices):
                 diff = len(available_indices)
-            sampled_indices += random.sample(available_indices, k=diff)
+            
+            # preferably pick from recent frames
+            back_search_dist = (30 if len(available_indices) >= 30 else
+                                                        len(available_indices))
+
+            sampled_indices += random.sample(
+                                    available_indices[-back_search_dist:], 
+                                    k=diff
+                                )
 
             # check again in case we still don't have enough and random sample 
             # repeat if we don't

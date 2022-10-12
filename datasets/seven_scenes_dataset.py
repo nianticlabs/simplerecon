@@ -199,6 +199,7 @@ class SevenScenesDataset(GenericMVSDataset):
 
             scan_sub_dir = "/".join(scan_dir.split("/")[-2:])
 
+            dist_to_last_valid_frame = 0
             bad_file_count = 0
             valid_frames = []
             for frame_id in all_frame_ids:
@@ -206,12 +207,14 @@ class SevenScenesDataset(GenericMVSDataset):
                 color_filepath = os.path.join(scan_dir, 
                                             f"frame-{frame_id}.color.png")
                 if not os.path.isfile(color_filepath):
+                    dist_to_last_valid_frame+=1
                     bad_file_count+=1
                     continue
+                
                 depth_filepath = os.path.join(scan_dir, 
                                             f"frame-{frame_id}.depth.png")
-
                 if not os.path.isfile(depth_filepath):
+                    dist_to_last_valid_frame+=1
                     bad_file_count+=1
                     continue
 
@@ -223,10 +226,12 @@ class SevenScenesDataset(GenericMVSDataset):
                     np.isinf(np.sum(world_T_cam_44)) or 
                     np.isneginf(np.sum(world_T_cam_44))
                 ):
+                    dist_to_last_valid_frame+=1
                     bad_file_count+=1
                     continue
                     
-                valid_frames.append(scan_sub_dir + " " + frame_id)
+                valid_frames.append(f"{scan_sub_dir} {frame_id} {dist_to_last_valid_frame}")
+                dist_to_last_valid_frame = 0
 
             print(f"Scene {scan} has {bad_file_count} bad frame files out "
                 f"of {len(all_frame_ids)}.")

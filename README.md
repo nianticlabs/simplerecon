@@ -456,6 +456,27 @@ This repo uses the notation "cam_T_world" to denote a transformation from world 
 
 This repo is geared towards ScanNet, so while its functionality should allow for any coordinate system (signaled via input flags), the model weights we provide assume a ScanNet coordinate system. This is important since we include ray information as part of metadata. Other datasets used with these weights should be transformed to the ScanNet system. The dataset classes we include will perform the appropriate transforms. 
 
+## 🐜🔧 Bug Fixes
+
+Initially this repo spat out tuple files for default DVMVS style keyframes with 9 extra frame of 25599 for the ScanNetv2 test set. There was a minor bug with handling lost tracking that's now fixed. This repo should now mimic the DVMVS keyframe buffer exactly, with 25590 keyframes for testing. The only effect this bug had was the inclusion of 9 extra frames, all the other tuples were exactly the same as that of DVMVS. The offending frames are in these scans 
+
+```
+scan         previous count  new count
+--------------------------------------
+scene0711_00 393             392
+scene0727_00 209             208 
+scene0736_00 1023            1022 
+scene0737_00 408             407 
+scene0751_00 165             164 
+scene0775_00 220             219 
+scene0791_00 227             226 
+scene0794_00 141             140 
+scene0795_00 102             101 
+```
+
+The tuple files for default test have been updated. Since this is a small (~3e-4) difference in extra frames scored, the scores are unchanged.
+
+
 ## 🙏 Acknowledgements
 
 We thank Aljaž Božič of [TransformerFusion](https://github.com/AljazBozic/TransformerFusion), Jiaming Sun of [Neural Recon](https://zju3dv.github.io/neuralrecon/), and Arda Düzçeker of [DeepVideoMVS](https://github.com/ardaduz/deep-video-mvs) for quickly providing useful information to help with baselines and for making their codebases readily available, especially on short notice.

@@ -195,8 +195,7 @@ class ColmapDataset(GenericMVSDataset):
             self.load_capture_poses(scan)
 
             bad_file_count = 0
-            valid_frames = []
-   
+            dist_to_last_valid_frame = 0
             valid_frames = []
             for frame_id in sorted(self.capture_poses[scan]):
                 world_T_cam_44, _ = self.load_pose(scan, frame_id)
@@ -206,9 +205,11 @@ class ColmapDataset(GenericMVSDataset):
                     np.isneginf(np.sum(world_T_cam_44))
                 ):
                     bad_file_count+=1
+                    dist_to_last_valid_frame+=1
                     continue
                 
-                valid_frames.append(f"{scan} {frame_id}")
+                valid_frames.append(f"{scan} {frame_id} {dist_to_last_valid_frame}")
+                dist_to_last_valid_frame = 0
 
             print(f"Scene {scan} has {bad_file_count} bad frame files out of "
                 f"{len(self.capture_poses[scan])}.")

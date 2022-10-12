@@ -288,6 +288,7 @@ class ScanniverseDataset(GenericMVSDataset):
 
             # find all valid frames by checking for pose and RGB
             bad_file_count = 0
+            dist_to_last_valid_frame = 0
             valid_frames = []
             for frame_id in list(self.capture_metadata[scan].keys()):
                 world_T_cam_44, _ = self.load_pose(scan, frame_id)
@@ -295,16 +296,19 @@ class ScanniverseDataset(GenericMVSDataset):
 
                 if not os.path.exists(self.get_color_filepath(scan, frame_id)):
                     bad_file_count+=1
+                    dist_to_last_valid_frame+=1
                     continue
 
                 if (np.isnan(np.sum(world_T_cam_44)) or 
                     np.isinf(np.sum(world_T_cam_44)) or 
                     np.isneginf(np.sum(world_T_cam_44))
                 ):
+                    dist_to_last_valid_frame+=1
                     bad_file_count+=1
                     continue
 
-                valid_frames.append(f"{scan} {frame_id}")
+                valid_frames.append(f"{scan} {frame_id} {dist_to_last_valid_frame}")
+                dist_to_last_valid_frame = 0
 
             print(f"Scene {scan} has {bad_file_count} bad frame files out "
                 f"of {len(list(self.capture_metadata[scan].keys()))}.")

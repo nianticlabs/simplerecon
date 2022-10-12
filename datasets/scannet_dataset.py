@@ -232,6 +232,7 @@ class ScannetDataset(GenericMVSDataset):
             # fetch total number of color files
             color_file_count = int(meta_data["numColorFrames"].strip())
 
+            dist_to_last_valid_frame = 0
             bad_file_count = 0
             valid_frames = []
             for frame_id in range(color_file_count):
@@ -247,11 +248,13 @@ class ScannetDataset(GenericMVSDataset):
 
                 # check if an image file exists.
                 if not os.path.isfile(color_filename):
+                    dist_to_last_valid_frame+=1
                     bad_file_count+=1
                     continue
                 
                 # check if a depth file exists.
                 if not os.path.isfile(depth_filename):
+                    dist_to_last_valid_frame+=1
                     bad_file_count+=1
                     continue
                 
@@ -261,10 +264,12 @@ class ScannetDataset(GenericMVSDataset):
                     np.isinf(np.sum(world_T_cam_44)) or 
                     np.isneginf(np.sum(world_T_cam_44))
                 ):
+                    dist_to_last_valid_frame+=1
                     bad_file_count+=1
                     continue
 
-                valid_frames.append(scan + " " + f"{frame_id:06d}")
+                valid_frames.append(f"{scan} {frame_id:06d} {dist_to_last_valid_frame}")
+                dist_to_last_valid_frame = 0
 
             print(f"Scene {scan} has {bad_file_count} bad frame files out of "
                   f"{color_file_count}.")
