@@ -90,28 +90,37 @@ def quick_viz_export(
             batch_size):
     """ Helper function for quickly exporting depth maps during inference. """
 
+    if valid_mask_b.sum() == 0:
+        batch_vmin = 0.0
+        batch_vmax = 5.0
+    else:
+        batch_vmin = cur_data["full_res_depth_b1hw"][valid_mask_b].min()
+        batch_vmax = cur_data["full_res_depth_b1hw"][valid_mask_b].max()
+
     for elem_ind in range(outputs["depth_pred_s0_b1hw"].shape[0]):
         if "frame_id_string" in cur_data:
             frame_id = cur_data["frame_id_string"][elem_ind]
         else:
             frame_id = (batch_ind * batch_size) + elem_ind
             frame_id = f"{str(frame_id):6d}"
-
-        # get max/min from gt
-        vmax = cur_data["full_res_depth_b1hw"][elem_ind][valid_mask_b[elem_ind]].max()
-        vmin = cur_data["full_res_depth_b1hw"][elem_ind][valid_mask_b[elem_ind]].min()
         
-        if vmin == vmax:
-            # no meaningful gt depth in dataloader, don't viz gt and 
-            # set vmin/max to default
-            vmin=0
-            vmax=5
+        # check for valid depths from dataloader
+        if valid_mask_b[elem_ind].sum() == 0:
+            sample_vmin = 0.0
+            sample_vmax = 0.0
         else:
+            # these will be the same when the depth map is all ones.
+            sample_vmin = cur_data["full_res_depth_b1hw"][elem_ind][valid_mask_b[elem_ind]].min()
+            sample_vmax = cur_data["full_res_depth_b1hw"][elem_ind][valid_mask_b[elem_ind]].max()
+
+        # if no meaningful gt depth in dataloader, don't viz gt and 
+        # set vmin/max to default
+        if sample_vmax != sample_vmin:
             full_res_depth_1hw = cur_data["full_res_depth_b1hw"][elem_ind]
 
             full_res_depth_3hw = colormap_image(
                                         full_res_depth_1hw, 
-                                        vmin=vmin, vmax=vmax
+                                        vmin=batch_vmin, vmax=batch_vmax
                                     )
 
             full_res_depth_hw3 = np.uint8(
@@ -125,7 +134,7 @@ def quick_viz_export(
 
         lowest_cost_3hw = colormap_image(
                                     outputs["lowest_cost_bhw"][elem_ind].unsqueeze(0), 
-                                    vmin=vmin, vmax=vmax
+                                    vmin=batch_vmin, vmax=batch_vmax
                                 )
         pil_image = Image.fromarray(
                             np.uint8(
@@ -137,7 +146,7 @@ def quick_viz_export(
 
         depth_3hw = colormap_image(
                             outputs["depth_pred_s0_b1hw"][elem_ind], 
-                            vmin=vmin, vmax=vmax)
+                            vmin=batch_vmin, vmax=batch_vmax)
         pil_image = Image.fromarray(
                             np.uint8(depth_3hw.permute(1,2,0
                                     ).cpu().detach().numpy() * 255)
