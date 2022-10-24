@@ -53,9 +53,9 @@ With larger batches speed increases considerably. With batch size 8 on the non-s
 
 ## 📝 TODOs:
 - [x] Simple scan for folks to quickly try the code, instead of downloading the ScanNetv2 test scenes. DONE
-- [ ] FPN model weights.
 - [x] ScanNetv2 extraction, ~~ETA 10th October~~ DONE
-- [ ] Tutorial on how to use Scanniverse data, ETA ~~5th October~~ ~~10th October~~ 20th October
+- [ ] FPN model weights.
+- ~~[ ] Tutorial on how to use Scanniverse data, ETA 5th October 10th October 20th October~~ At present there is no publically available way of exporting scans from Scanniverse. You'll have to use ios-logger; NeuralRecon have a good tutorial on [this](https://github.com/zju3dv/NeuralRecon/blob/master/DEMO.md), and a dataloader that accepts the processed format is at ```datasets/arkit_dataset.py```. 
 
 ## 🏃 Running out of the box!
 
