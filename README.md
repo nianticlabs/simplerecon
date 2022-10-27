@@ -20,6 +20,10 @@ https://user-images.githubusercontent.com/14994206/189788536-5fa8a1b5-ae8b-4f64-
 
 This code is for non-commercial use; please see the [license file](LICENSE) for terms. If you do find any part of this codebase helpful, please cite our paper using the BibTex below and link this repo. Thanks!
 
+## 🗺️ Overview
+
+SimpleRecon takes as input posed RGB images, and outputs a depth map for a target image.
+
 ## ⚙️ Setup
 
 Assuming a fresh [Anaconda](https://www.anaconda.com/download/) distribution, you can install dependencies with:
