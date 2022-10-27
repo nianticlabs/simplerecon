@@ -55,7 +55,7 @@ With larger batches speed increases considerably. With batch size 8 on the non-s
 - [x] Simple scan for folks to quickly try the code, instead of downloading the ScanNetv2 test scenes. DONE
 - [x] ScanNetv2 extraction, ~~ETA 10th October~~ DONE
 - [ ] FPN model weights.
-- ~~[ ] Tutorial on how to use Scanniverse data, ETA 5th October 10th October 20th October~~ At present there is no publically available way of exporting scans from Scanniverse. You'll have to use ios-logger; NeuralRecon have a good tutorial on [this](https://github.com/zju3dv/NeuralRecon/blob/master/DEMO.md), and a dataloader that accepts the processed format is at ```datasets/arkit_dataset.py```. UPDATE: There is now  quick readme [data_scripts/IOS_LOGGER_ARKIT_README.md](data_scripts/IOS_LOGGER_ARKIT_README.md) for how to process and run inference an ios-logger scan using the script at ```data_scripts/ios_logger_preprocessing.py```.
+- ~~[ ] Tutorial on how to use Scanniverse data, ETA 5th October 10th October 20th October~~ At present there is no publically available way of exporting scans from Scanniverse. You'll have to use ios-logger; NeuralRecon have a good tutorial on [this](https://github.com/zju3dv/NeuralRecon/blob/master/DEMO.md), and a dataloader that accepts the processed format is at ```datasets/arkit_dataset.py```. UPDATE: There is now a quick readme [data_scripts/IOS_LOGGER_ARKIT_README.md](data_scripts/IOS_LOGGER_ARKIT_README.md) for how to process and run inference an ios-logger scan using the script at ```data_scripts/ios_logger_preprocessing.py```.
 
 ## 🏃 Running out of the box!
 
