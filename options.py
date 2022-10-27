@@ -164,6 +164,9 @@ class Options():
     # tuples
     skip_frames: int = None
 
+    # skip to a frame in the scan
+    skip_to_frame: int = None
+
     # point cloud fusion hyperparams.
     pc_fusion_z_thresh: float = 0.04
     n_consistent_thresh: int = 3

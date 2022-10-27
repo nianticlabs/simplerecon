@@ -234,6 +234,7 @@ def main(opts):
                                     ),
                         include_full_depth_K=True,
                         skip_frames=opts.skip_frames,
+                        skip_to_frame=opts.skip_to_frame,
                         image_width=opts.image_width,
                         image_height=opts.image_height,
                         pass_frame_id=True,

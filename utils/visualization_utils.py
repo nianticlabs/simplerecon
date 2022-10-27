@@ -97,6 +97,10 @@ def quick_viz_export(
         batch_vmin = cur_data["full_res_depth_b1hw"][valid_mask_b].min()
         batch_vmax = cur_data["full_res_depth_b1hw"][valid_mask_b].max()
 
+    if batch_vmax == batch_vmin:
+        batch_vmin = 0.0
+        batch_vmax = 5.0
+
     for elem_ind in range(outputs["depth_pred_s0_b1hw"].shape[0]):
         if "frame_id_string" in cur_data:
             frame_id = cur_data["frame_id_string"][elem_ind]

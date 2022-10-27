@@ -44,6 +44,7 @@ class ARKitDataset(GenericMVSDataset):
             include_high_res_color=False,
             pass_frame_id=False,
             skip_frames=None,
+            skip_to_frame=None,
             verbose_init=True,
             min_valid_depth=1e-3,
             max_valid_depth=10,
@@ -64,7 +65,7 @@ class ARKitDataset(GenericMVSDataset):
                 include_full_depth_K=include_full_depth_K, 
                 include_high_res_color=include_high_res_color, 
                 pass_frame_id=pass_frame_id, skip_frames=skip_frames, 
-                verbose_init=verbose_init, 
+                skip_to_frame=skip_to_frame, verbose_init=verbose_init, 
                 native_depth_width=native_depth_width,
                 native_depth_height=native_depth_height
             )

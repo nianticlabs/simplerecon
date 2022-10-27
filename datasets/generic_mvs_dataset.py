@@ -59,6 +59,7 @@ class GenericMVSDataset(Dataset):
                 shuffle_tuple=False,
                 pass_frame_id=False,
                 skip_frames=None,
+                skip_to_frame=None,
                 verbose_init=True,
                 native_depth_width=640,
                 native_depth_height=480,
@@ -139,6 +140,17 @@ class GenericMVSDataset(Dataset):
                 self.frame_tuples = [frame_tuple for frame_tuple in 
                         self.frame_tuples if limit_to_scan_id == 
                             frame_tuple.split(" ")[0]]
+
+            if skip_to_frame is not None:
+                if verbose_init:
+                    print(f"".center(80, "#"))
+                    print(f"".center(80, "#"))
+                    print(f"".center(80, "#"))
+                    print(f" Skipping to frame {skip_to_frame} ".center(80, "#"))
+                    print(f"".center(80, "#"))
+                    print(f"".center(80, "#"))
+                    print(f"".center(80, "#"), "\n")
+                self.frame_tuples = self.frame_tuples[skip_to_frame:]
 
             # optionally skip every frame with interval skip_frame 
             if skip_frames is not None:
