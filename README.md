@@ -20,6 +20,30 @@ https://user-images.githubusercontent.com/14994206/189788536-5fa8a1b5-ae8b-4f64-
 
 This code is for non-commercial use; please see the [license file](LICENSE) for terms. If you do find any part of this codebase helpful, please cite our paper using the BibTex below and link this repo. Thanks!
 
+## Table of Contents
+
+  * [🗺️ Overview](#%EF%B8%8F-overview)
+  * [⚙️ Setup](#%EF%B8%8F-setup)
+  * [📦 Models](#-models)
+  * [🚀 Speed](#-speed)
+  * [📝 TODOs:](#-todos)
+  * [🏃 Running out of the box!](#-running-out-of-the-box)
+  * [💾 ScanNetv2 Dataset](#-scannetv2-dataset)
+  * [🖼️🖼️🖼️ Frame Tuples](#%EF%B8%8F%EF%B8%8F%EF%B8%8F-frame-tuples)
+  * [📊 Testing and Evaluation](#-testing-and-evaluation)
+  * [👉☁️ Point Cloud Fusion](#%EF%B8%8F-point-cloud-fusion)
+  * [📊 Mesh Metrics](#-mesh-metrics)
+  * [⏳ Training](#-training)
+    + [🎛️ Finetuning a pretrained model](#%EF%B8%8F-finetuning-a-pretrained-model)
+  * [🔧 Other training and testing options](#-other-training-and-testing-options)
+  * [✨ Visualization](#-visualization)
+  * [📝🧮👩‍💻 Notation for Transformation Matrices](#-notation-for-transformation-matrices)
+  * [🗺️ World Coordinate System](#%EF%B8%8F-world-coordinate-system)
+  * [🐜🔧 Bug Fixes](#-bug-fixes)
+  * [🙏 Acknowledgements](#-acknowledgements)
+  * [📜 BibTeX](#-bibtex)
+  * [👩‍⚖️ License](#%EF%B8%8F-license)
+
 ## 🗺️ Overview
 
 SimpleRecon takes as input posed RGB images, and outputs a depth map for a target image.
