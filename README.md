@@ -40,6 +40,7 @@ This code is for non-commercial use; please see the [license file](LICENSE) for 
   * [📝🧮👩‍💻 Notation for Transformation Matrices](#-notation-for-transformation-matrices)
   * [🗺️ World Coordinate System](#%EF%B8%8F-world-coordinate-system)
   * [🐜🔧 Bug Fixes](#-bug-fixes)
+  * [🗺️💾 COLMAP Dataset](#%EF%B8%8F-colmap-dataset)
   * [🙏 Acknowledgements](#-acknowledgements)
   * [📜 BibTeX](#-bibtex)
   * [👩‍⚖️ License](#%EF%B8%8F-license)
@@ -506,6 +507,11 @@ scene0795_00 102             101
 
 The tuple files for default test have been updated. Since this is a small (~3e-4) difference in extra frames scored, the scores are unchanged.
 
+## 🗺️💾 COLMAP Dataset
+
+__TL;DR:__ Scale your poses and crop your images.
+
+We do provide a dataloader for loading images from a COLMAP sparse reconstruction. For this to work with SimpleRecon, you'll need to crop your images to match the FOV of ScanNet (roughly similar to an iPhone's FOV in video mode), and scale your pose's location using known real world measurements. If these steps aren't taken, the cost volume won't be built correctly, and the network will not estimate depth properly.
 
 ## 🙏 Acknowledgements
 
