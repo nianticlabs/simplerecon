@@ -79,10 +79,9 @@ class Project3D(jit.ScriptModule):
 
         cam_points_b3N = P_b44[:, :3] @ points_b4N
 
-        depth_b1N = torch.maximum(cam_points_b3N[:, 2:], self.eps)
-        pix_coords_b2N = cam_points_b3N[:, :2] / depth_b1N
+        pix_coords_b2N = cam_points_b3N[:, :2] / torch.maximum(cam_points_b3N[:, 2:], self.eps)
 
-        return torch.cat([pix_coords_b2N, depth_b1N], dim=1)
+        return torch.cat([pix_coords_b2N, cam_points_b3N[:, 2:]], dim=1)
 
 
 class NormalGenerator(jit.ScriptModule):
