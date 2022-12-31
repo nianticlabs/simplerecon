@@ -25,7 +25,7 @@ This code is for non-commercial use; please see the [license file](LICENSE) for 
 There is an update as of 31/12/2022 that fixes slightly wrong intrinsics, flip augmentation for the cost volume, and a 
 numerical precision bug in projection. You will need to update your forks and use new weights. See [Bug Fixes](#-bug-fixes).
 
-Precomputed scans are here: https://drive.google.com/drive/folders/1dSOFI9GayYHQjsx4I_NG0-3ebCAfWXjV?usp=share_link 
+Precomputed scans for online default frames are here: https://drive.google.com/drive/folders/1dSOFI9GayYHQjsx4I_NG0-3ebCAfWXjV?usp=share_link 
 
 ## Table of Contents
 
