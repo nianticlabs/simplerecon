@@ -79,7 +79,7 @@ class Project3D(jit.ScriptModule):
 
         cam_points_b3N = P_b44[:, :3] @ points_b4N
         
-        # from Kornia and OpenCV
+        # from Kornia and OpenCV, https://kornia.readthedocs.io/en/latest/_modules/kornia/geometry/conversions.html#convert_points_from_homogeneous
         mask = torch.abs(cam_points_b3N[:, 2:]) > self.eps
         depth_b1N = (cam_points_b3N[:, 2:] + self.eps)
         scale = torch.where(mask, 1.0 / depth_b1N, torch.tensor(1.0, device=depth_b1N.device))
