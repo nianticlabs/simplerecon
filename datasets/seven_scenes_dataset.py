@@ -359,7 +359,7 @@ class SevenScenesDataset(GenericMVSDataset):
         scene_path = os.path.join(self.scenes_path, scan_id)
         return os.path.join(scene_path, f"frame-{frame_id}.pose.txt")
 
-    def load_intrinsics(self, scan_id=None, frame_id=None):
+    def load_intrinsics(self, scan_id=None, frame_id=None, flip=None):
         """ Loads intrinsics, computes scaled intrinsics, and returns a dict 
             with intrinsics matrices for a frame at multiple scales.
 
@@ -367,6 +367,7 @@ class SevenScenesDataset(GenericMVSDataset):
                 scan_id: the scan this file belongs to.
                 frame_id: id for the frame. Not needed for ScanNet as images 
                 share intrinsics across a scene.
+                flip: unused.
 
             Returns:
                 output_dict: A dict with

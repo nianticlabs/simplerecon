@@ -20,6 +20,13 @@ https://user-images.githubusercontent.com/14994206/189788536-5fa8a1b5-ae8b-4f64-
 
 This code is for non-commercial use; please see the [license file](LICENSE) for terms. If you do find any part of this codebase helpful, please cite our paper using the BibTex below and link this repo. Thanks!
 
+## 🆕 Update
+
+There is an update as of 31/12/2022 that fixes slightly wrong intrinsics, flip augmentation for the cost volume, and a 
+numerical precision bug in projection. You will need to update your forks and use new weights. See [Bug Fixes](#-bug-fixes).
+
+Precomputed scans are here: https://drive.google.com/drive/folders/1dSOFI9GayYHQjsx4I_NG0-3ebCAfWXjV?usp=share_link 
+
 ## Table of Contents
 
   * [🗺️ Overview](#%EF%B8%8F-overview)
@@ -65,8 +72,8 @@ We provide the following models:
 
 | `--config`  | Model  | Abs Diff↓| Sq Rel↓ | delta < 1.05↑| Chamfer↓ | F-Score↑ |
 |-------------|----------|--------------------|---------|---------|--------------|----------|
-| [`hero_model.yaml`](https://drive.google.com/file/d/1qGkROKhVOyHtBqkSlmM-illihYdr8sZg/view?usp=sharing) | Metadata + Resnet Matching | 0.0885 | 0.0125 | 73.16 | 5.81 | 0.671 |
-| [`dot_product_model.yaml`](https://drive.google.com/file/d/1qk469gs3kLRi1f5Usx11hVpJDScuegBu/view?usp=sharing) | Dot Product + Resnet Matching | 0.0941 | 0.0139 | 70.48 | 6.29 | 0.642 |
+| [`hero_model.yaml`](https://drive.google.com/file/d/1hCuKZjEq-AghrYAmFxJs_4eeixIlP488/view?usp=sharing) | Metadata + Resnet Matching | 0.0868 | 0.0127 | 74.26 | 5.69 | 0.680 |
+| [`dot_product_model.yaml`](https://drive.google.com/file/d/13lW-VPgsl2eAo95E87RKWoK8KUZelkUK/view?usp=sharing) | Dot Product + Resnet Matching | 0.0910 | 0.0134 | 71.90 | 5.92 | 0.667 |
 
 `hero_model` is the one we use in the paper as **Ours**
 
@@ -143,7 +150,10 @@ The codebase expects ScanNetv2 to be in the following format:
                     frame-000261.depth.png (full res depth, stored scale *1000)
                     frame-000261.depth.256.png (optional, depth at 256x192 also
                                                 scaled)
-                scene0707.txt (scan metadata and intrinsics)
+                scene0707.txt (scan metadata and image sizes)
+                intrinsic
+                    intrinsic_depth.txt
+                    intrinsic_color.txt
             ...
         scans (val and train scans)
             scene0000_00
@@ -151,8 +161,7 @@ The codebase expects ScanNetv2 to be in the following format:
             scene0000_01
             ....
 
-In this example `scene0707.txt` should contain the scan's metadata and 
-intrinsics:
+In this example `scene0707.txt` should contain the scan's metadata:
 
         colorHeight = 968
         colorToDepthExtrinsics = 0.999263 -0.010031 0.037048 ........
@@ -488,6 +497,43 @@ Finally this notation allows for representing both rotations and translations su
 This repo is geared towards ScanNet, so while its functionality should allow for any coordinate system (signaled via input flags), the model weights we provide assume a ScanNet coordinate system. This is important since we include ray information as part of metadata. Other datasets used with these weights should be transformed to the ScanNet system. The dataset classes we include will perform the appropriate transforms. 
 
 ## 🐜🔧 Bug Fixes
+
+### **Update 31/12/2022:**
+
+There are a few bugs addressed in this update, you will need to update your forks and use new weights from the table near the beginning of this README. You will also need to make sure you have the correct intrinsics files extracted using the reader.
+- We were initially using a slightly incorrect set of intrinsics in ScanNet. The repo now uses intriniscs from the intriniscs folder.
+- The MLP in the cost volume wasn't seeing any flip augmentation which led to biases around edges, so we've now included a geometry based flip in the base dataset class. It is enabled only for the train split.
+- We had a bug in projection that never allowed the mask in the cost volume to properly function, so we've now switched to using the same normalization as in OpenCV and Kornia.
+
+Thanks to all those that pointed it out and were patient while we worked on fixes. 
+
+All scores improve with these fixes, and the associated weights are uploaded here. For old scores, code, and weights, check this commit hash: 7de5b451e340f9a11c7fd67bd0c42204d0b009a9
+
+Full scores for models with bug fixes:
+
+_Depth_
+| `--config`  | Abs Diff↓ | Abs Rel↓ | Sq Rel↓ |  RMSE↓  |  log RMSE↓  |delta < 1.05↑ | delta < 1.10↑ |
+|-------------|-----------|----------|---------|---------|-------------|--------------|---------------|
+| `hero_model.yaml`, Metadata + Resnet  | 0.0868 | 0.0428 | 0.0127 | 0.1472 |  0.0681 | 74.26 | 90.88 |
+| `dot_product_model.yaml`, dot product + Resnet | 0.0910 | 0.0453 | 0.0134 | 0.1509 | 0.0704 | 71.90 | 89.75 | 
+
+_Mesh Fusion_
+| `--config`  | Acc↓ | Comp↓ | Chamfer↓ | Recall↑ | Precision↑ | F-Score↑ |
+|-------------|------|-------|----------|---------|------------|----------|
+| `hero_model.yaml`, Metadata + Resnet | 5.41 | 5.98 | 5.69 | 0.695 | 0.668 | 0.680 |
+| `dot_product_model.yaml`, dot product + Resnet | 5.66 | 6.18 | 5.92 | 0.682 | 0.655 | 0.667 | 
+
+
+_Comparison:_
+| `--config`  | Model  | Abs Diff↓| Sq Rel↓ | delta < 1.05↑| Chamfer↓ | F-Score↑ |
+|-------------|----------|--------------------|---------|---------|--------------|----------|
+| `hero_model.yaml` | Metadata + Resnet Matching | 0.0868 | 0.0127 | 74.26 | 5.69 | 0.680 |
+| OLD `hero_model.yaml` | Metadata + Resnet Matching | 0.0885 | 0.0125 | 73.16 | 5.81 | 0.671 |
+| `dot_product_model.yaml` | Dot Product + Resnet Matching | 0.0910 | 0.0134 | 71.90 | 5.92 | 0.667 |
+| OLD `dot_product_model.yaml` | Dot Product + Resnet Matching | 0.0941 | 0.0139 | 70.48 | 6.29 | 0.642 |
+
+
+### **Tiny bug with frame count:**
 
 Initially this repo spat out tuple files for default DVMVS style keyframes with 9 extra frame of 25599 for the ScanNetv2 test set. There was a minor bug with handling lost tracking that's now fixed. This repo should now mimic the DVMVS keyframe buffer exactly, with 25590 keyframes for testing. The only effect this bug had was the inclusion of 9 extra frames, all the other tuples were exactly the same as that of DVMVS. The offending frames are in these scans 
 

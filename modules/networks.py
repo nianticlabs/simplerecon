@@ -204,7 +204,7 @@ class ResnetMatchingEncoder(nn.Module):
     def forward(self, input_image):
         return self.net(input_image)
 
-class FPNMatchingEncoder(nn.Module):
+class UNetMatchingEncoder(nn.Module):
     def __init__(self):
         super().__init__()
         self.encoder = timm.create_model(

@@ -121,7 +121,7 @@ def main(opts):
     lr_monitor = LearningRateMonitor(logging_interval='step')
 
     # allowing the lightning DDPPlugin to ignore unused params.
-    find_unused_parameters = (opts.matching_encoder_type == "fpn")
+    find_unused_parameters = (opts.matching_encoder_type == "unet_encoder")
     
     trainer = pl.Trainer(
                         gpus=opts.gpus,

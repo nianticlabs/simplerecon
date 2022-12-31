@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from losses import MSGradientLoss, MVDepthLoss, NormalsLoss, ScaleInvariantLoss
 from modules.cost_volume import CostVolumeManager, FeatureVolumeManager
 from modules.layers import TensorFormatter
-from modules.networks import (CVEncoder, DepthDecoderPP, FPNMatchingEncoder,
+from modules.networks import (CVEncoder, DepthDecoderPP, UNetMatchingEncoder,
                              ResnetMatchingEncoder)
 from torch import nn
 from utils.generic_utils import (reverse_imagenet_normalize, tensor_B_to_bM,
@@ -164,7 +164,8 @@ class DepthModel(pl.LightningModule):
         elif self.run_opts.feature_volume_type == "mlp_feature_volume":
             cost_volume_class = FeatureVolumeManager
         else:
-            raise ValueError("Unrecognized option for feature volume type!")
+            raise ValueError(f"Unrecognized option {self.run_opts.feature_volume_type} " 
+                             f"for feature volume type!")
 
         self.cost_volume = cost_volume_class(
             matching_height=self.run_opts.image_height // (2 ** (self.run_opts.matching_scale + 1)),
@@ -179,10 +180,11 @@ class DepthModel(pl.LightningModule):
         if "resnet" == self.run_opts.matching_encoder_type:
             self.matching_model = ResnetMatchingEncoder(18, 
                                             self.run_opts.matching_feature_dims)
-        elif "fpn" == self.run_opts.matching_encoder_type:
-            self.matching_model = FPNMatchingEncoder()
+        elif "unet_encoder" == self.run_opts.matching_encoder_type:
+            self.matching_model = UNetMatchingEncoder()
         else:
-            raise ValueError("Unrecognized option for matching encoder type!")
+            raise ValueError(f"Unrecognized option {self.run_opts.matching_encoder_type} "
+                            f"for matching encoder type!")
 
         self.tensor_formatter = TensorFormatter()
 

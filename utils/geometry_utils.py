@@ -63,25 +63,29 @@ class Project3D(jit.ScriptModule):
     """
     Layer that projects 3D points into the 2D camera
     """
-    def __init__(self, eps: float = 1e-5):
+    def __init__(self, eps: float = 1e-8):
         super().__init__()
 
         self.register_buffer("eps", torch.tensor(eps).view(1, 1, 1))
 
     @jit.script_method
-    def forward(self, points_b4N: Tensor, 
+    def forward(self, points_b4N: Tensor,
                 K_b44: Tensor, cam_T_world_b44: Tensor) -> Tensor:
-        """ 
+        """
         Projects spatial points in 3D world space to camera image space using
         the extrinsics matrix cam_T_world_b44 and intrinsics K_b44.
         """
         P_b44 = K_b44 @ cam_T_world_b44
 
         cam_points_b3N = P_b44[:, :3] @ points_b4N
-
-        depth_b1N = torch.maximum(cam_points_b3N[:, 2:], self.eps)
-        pix_coords_b2N = cam_points_b3N[:, :2] / depth_b1N
-
+        
+        # from Kornia and OpenCV
+        mask = torch.abs(cam_points_b3N[:, 2:]) > self.eps
+        depth_b1N = (cam_points_b3N[:, 2:] + self.eps)
+        scale = torch.where(mask, 1.0 / depth_b1N, torch.tensor(1.0, device=depth_b1N.device))
+        
+        pix_coords_b2N = cam_points_b3N[:, :2] * scale
+        
         return torch.cat([pix_coords_b2N, depth_b1N], dim=1)
 
 
