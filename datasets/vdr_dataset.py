@@ -204,7 +204,7 @@ class VDRDataset(GenericMVSDataset):
 
         return world_T_cam, cam_T_world
 
-    def load_intrinsics(self, scan_id, frame_id):
+    def load_intrinsics(self, scan_id, frame_id, flip=None):
         """ Loads intrinsics, computes scaled intrinsics, and returns a dict 
             with intrinsics matrices for a frame at multiple scales.
 
@@ -212,6 +212,7 @@ class VDRDataset(GenericMVSDataset):
                 scan_id: the scan this file belongs to.
                 frame_id: id for the frame. Not needed for ScanNet as images 
                 share intrinsics across a scene.
+                flip: unused
 
             Returns:
                 output_dict: A dict with

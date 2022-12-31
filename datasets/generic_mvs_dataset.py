@@ -322,7 +322,7 @@ class GenericMVSDataset(Dataset):
         """
         raise NotImplementedError()
 
-    def load_intrinsics(self, scan_id, frame_id=None):
+    def load_intrinsics(self, scan_id, frame_id=None, flip=None):
         """ Loads intrinsics, computes scaled intrinsics, and returns a dict 
             with intrinsics matrices for a frame at multiple scales.
 
@@ -330,6 +330,7 @@ class GenericMVSDataset(Dataset):
                 scan_id: the scan this file belongs to.
                 frame_id: id for the frame. Not needed for ScanNet as images 
                 share intrinsics across a scene.
+                flip: flips intrinsics along x for flipped images.
 
             Returns:
                 output_dict: A dict with
@@ -447,7 +448,7 @@ class GenericMVSDataset(Dataset):
         
         return high_res_color
 
-    def get_frame(self, scan_id, frame_id, load_depth):
+    def get_frame(self, scan_id, frame_id, load_depth, flip=False):
         """ Retrieves a single frame's worth of information. 
 
             NOTE: Returned depth maps will use NaN for values where the depth
@@ -458,6 +459,7 @@ class GenericMVSDataset(Dataset):
                 frame_id: an integer id for this frame.
                 load_depth: a bool flag for loading depth maps and not dummy 
                     data
+                flip: flips images, depth maps, and intriniscs along x.
             Returns:
                 output_dict: a dictionary with this frame's information, 
                 including:
@@ -503,12 +505,21 @@ class GenericMVSDataset(Dataset):
         # load pose
         world_T_cam, cam_T_world = self.load_pose(scan_id, frame_id)
 
+        if flip:
+            T = np.eye(4).astype(world_T_cam.dtype)
+            T[0,0] = -1.0
+            world_T_cam = world_T_cam @ T
+            cam_T_world = np.linalg.inv(world_T_cam)
+
         # Load image
         image = self.load_color(scan_id, frame_id)
 
         # Augment images
         if self.split == "train":
             image = self.color_transform(image)
+
+        if flip:
+            image = torch.flip(image, (-1,))
 
         # Do imagenet normalization
         image = imagenet_normalize(image)
@@ -520,7 +531,7 @@ class GenericMVSDataset(Dataset):
         })
 
         # load intrinsics
-        intrinsics = self.load_intrinsics(scan_id, frame_id)
+        intrinsics = self.load_intrinsics(scan_id, frame_id, flip=flip)
 
         output_dict.update(intrinsics)
 
@@ -528,6 +539,12 @@ class GenericMVSDataset(Dataset):
             # get depth
             depth, mask, mask_b = self.load_target_size_depth_and_mask(
                                                             scan_id, frame_id)
+
+            if flip:
+                depth = torch.flip(depth, (-1,))
+                mask = torch.flip(mask, (-1,))
+                mask_b = torch.flip(mask_b, (-1,))
+
             output_dict.update({
                 "depth_b1hw": depth,
                 "mask_b1hw": mask,
@@ -538,6 +555,10 @@ class GenericMVSDataset(Dataset):
         if self.include_high_res_color:
             high_res_color = self.load_high_res_color(scan_id, frame_id)
             high_res_color = imagenet_normalize(high_res_color)
+
+            if flip:
+                high_res_color = torch.flip(high_res_color, (-1,))
+
             output_dict.update({
                 "high_res_color_b3hw": high_res_color,
             })
@@ -547,6 +568,11 @@ class GenericMVSDataset(Dataset):
             full_res_depth, full_res_mask, full_res_mask_b = \
                     self.load_full_res_depth_and_mask(scan_id, frame_id)
                     
+            if flip:
+                full_res_depth = torch.flip(full_res_depth, (-1,))
+                full_res_mask = torch.flip(full_res_mask, (-1,))
+                full_res_mask_b = torch.flip(full_res_mask_b, (-1,))
+
             output_dict.update({
                 "full_res_depth_b1hw": full_res_depth,
                 "full_res_mask_b1hw": full_res_mask,
@@ -584,6 +610,9 @@ class GenericMVSDataset(Dataset):
                 src_data: stacked frame data for each source frame
         """
 
+        flip_threshold = 0.5 if self.split == "train" else 0.0
+        flip = torch.rand(1).item() < flip_threshold
+        
         # get the index of the tuple 
         scan_id, *frame_ids = self.frame_tuples[idx].split(" ")
 
@@ -602,7 +631,7 @@ class GenericMVSDataset(Dataset):
         # assemble the dataset element by getting all data for each frame
         inputs = []
         for _, frame_id in enumerate(frame_ids):
-            inputs += [self.get_frame(scan_id, frame_id, load_depth=True)]
+            inputs += [self.get_frame(scan_id, frame_id, load_depth=True, flip=flip)]
         
         # cur_data is the reference frame
         cur_data, *src_data_list = inputs

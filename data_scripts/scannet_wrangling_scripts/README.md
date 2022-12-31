@@ -20,7 +20,11 @@ These scripts should help you export ScanNetv2 to the following format:
                     frame-000261.depth.png (full res depth, stored scale *1000)
                     frame-000261.depth.256.png (optional, depth at 256x192 also
                                                 scaled)
-                scene0707.txt (scan metadata and intrinsics)
+                scene0707.txt (scan metadata and image sizes)
+                intrinsic
+                    intrinsic_depth.txt
+                    intrinsic_color.txt
+
             ...
         scans (val and train scans)
             scene0000_00
@@ -49,7 +53,7 @@ python download_scannet.py -o SCANNET_ROOT --id scene0707_00
 
 This will download a `.sens` file, `.txt` file, the high resolution mesh `ply`, and a lower resolution mesh `ply`. 
 
-`.txt` will include intrinsics and meta information for the scan. See the next section for extracting the `.sens` file.
+`.txt` will include meta information for the scan. See the next section for extracting the `.sens` file.
 
 ## Extracting data from .sens files
 
@@ -59,7 +63,7 @@ This is a modified version of the SensReader python script at
 https://github.com/ScanNet/ScanNet/tree/master/SensReader/python
 
 
-`reader.py` will extract depth and jpg files from ScanNetv2's downloaded `.sens` files. It will dump the `jpg` data directly to disk without uncompressing/compressing.
+`reader.py` will extract depth, jpg, and intrinics files from ScanNetv2's downloaded `.sens` files. It will dump the `jpg` data directly to disk without uncompressing/compressing.
 
 To extract all scans for test:
 ```
@@ -69,7 +73,8 @@ python reader.py --scans_folder SCANNET_ROOT/scans_test \
                  --num_workers 12 \
                  --export_poses \
                  --export_depth_images \
-                 --export_color_images;
+                 --export_color_images \
+                 --export_intrinsics;
 ```
 
 For train and val
@@ -80,7 +85,8 @@ python reader.py --scans_folder SCANNET_ROOT/scans \
                  --num_workers 12 \
                  --export_poses \
                  --export_depth_images \
-                 --export_color_images;
+                 --export_color_images \
+                 --export_intrinsics;
 
 python reader.py --scans_folder SCANNET_ROOT/scans \
                  --output_path  OUTPUT_PATH/scans \
@@ -88,7 +94,8 @@ python reader.py --scans_folder SCANNET_ROOT/scans \
                  --num_workers 12 \
                  --export_poses \
                  --export_depth_images \
-                 --export_color_images;
+                 --export_color_images \
+                 --export_intrinsics;
 ```
 
 `OUTPUT_PATH` can be the same directory as the ScanNet root directory `SCANNET_ROOT`.
