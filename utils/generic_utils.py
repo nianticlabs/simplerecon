@@ -260,7 +260,10 @@ def cache_model_outputs(
         elem_output_dict = {}
         
         for key in outputs:
+            if outputs[key] is not None:
                 elem_output_dict[key] = outputs[key][elem_ind].unsqueeze(0)
+            else:
+                elem_output_dict[key] = None 
 
         # include some auxiliary information
         elem_output_dict["K_full_depth_b44"] = cur_data[
