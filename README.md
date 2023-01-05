@@ -68,7 +68,7 @@ We ran our experiments with PyTorch 1.10, CUDA 11.3, Python 3.9.7 and Debian GNU
 
 Download a pretrained model into the `weights/` folder.
 
-We provide the following models:
+We provide the following models (scores are with online default keyframes):
 
 | `--config`  | Model  | Abs Diff↓| Sq Rel↓ | delta < 1.05↑| Chamfer↓ | F-Score↑ |
 |-------------|----------|--------------------|---------|---------|--------------|----------|
