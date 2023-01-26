@@ -48,22 +48,26 @@ to the same GitHub repository by Licensor.
 
     2.1 The Licensor has all necessary rights to grant a license under: (i)
 copyright and rights in the nature of copyright subsisting in the Software; and
-(ii) certain patent rights resulting from a patent application filed by the
-Licensor in the United States in connection with the Software. The Licensor
-grants the Licensee for the duration of this Agreement, a free of charge,
-non-sublicenseable, non-exclusive, non-transferable copyright and patent
-license (in consequence of said patent application) to use the Software for
-non-commercial purpose only, including teaching and research at educational
-institutions and research at not-for-profit research institutions in accordance
-with the provisions of this Agreement. Non-commercial use expressly excludes
-any profit-making or commercial activities, including without limitation sale,
-license, manufacture or development of commercial products, use in
+(ii) certain patent rights resulting from a patent application(s) filed by the
+Licensor in the United States and/or other jurisdictions in connection with the 
+Software. The Licensor grants the Licensee for the duration of this Agreement, 
+a free of charge, non-sublicenseable, non-exclusive, non-transferable copyright 
+and patent license (in consequence of said patent application(s)) to use the 
+Software for non-commercial purpose only, including teaching and research at 
+educational institutions and research at not-for-profit research institutions 
+in accordance with the provisions of this Agreement. Non-commercial use 
+expressly excludes any profit-making or commercial activities, including without 
+limitation sale, license, manufacture or development of commercial products, use in
 commercially-sponsored research, use at a laboratory or other facility owned or
 controlled (whether in whole or in part) by a commercial entity, provision of
-consulting service, use for or on behalf of any commercial entity, and use in
+consulting service, use for or on behalf of any commercial entity, use in
 research where a commercial party obtains rights to research results or any
-other benefit. Any use of the Software for any purpose other than
-non-commercial research shall automatically terminate this License.
+other benefit, and use of the code in any models, model weights or code 
+resulting from such procedure in any commercial product. Notwithstanding the 
+foregoing restrictions, you can use this code for publishing comparison results 
+for academic papers, including retraining on your own data. Any use of the 
+Software for any purpose other than pursuant to the license grant set forth 
+above shall automatically terminate this License.
 
 
       2.2 The Licensee is permitted to make modifications to the Software
