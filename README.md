@@ -22,7 +22,7 @@ This code is for non-commercial use; please see the [license file](LICENSE) for 
 
 ## 🆕 Updates
 
-26/01/2023: The license has been modified to allow running the model for academic reasons easier. Please the LICENSE file for the exact details.
+26/01/2023: The license has been modified to make running the model for academic reasons easier. Please the LICENSE file for the exact details.
 
 There is an update as of 31/12/2022 that fixes slightly wrong intrinsics, flip augmentation for the cost volume, and a 
 numerical precision bug in projection. All scores improve. You will need to update your forks and use new weights. See [Bug Fixes](#-bug-fixes).
