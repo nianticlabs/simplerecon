@@ -20,7 +20,7 @@ https://user-images.githubusercontent.com/14994206/189788536-5fa8a1b5-ae8b-4f64-
 
 This code is for non-commercial use; please see the [license file](LICENSE) for terms. If you do find any part of this codebase helpful, please cite our paper using the BibTex below and link this repo. Thanks!
 
-## 🆕 Update
+## 🆕 Updates
 
 26/01/2023: The license has been modified to allow running the model for academic reasons easier. Please the LICENSE file for the exact details.
 
