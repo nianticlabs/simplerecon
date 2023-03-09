@@ -14,7 +14,7 @@ dependencies:
   - matplotlib # plotting
   - pip
   - pip:
-    - kornia # gradients
+    - kornia==0.6.7 # gradients
     - antialiased-cnns # anti aliased resnet
     - efficientnet_pytorch
     - timm # efficent
