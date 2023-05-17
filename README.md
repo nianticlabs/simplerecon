@@ -12,9 +12,7 @@ This is the reference PyTorch implementation for training and testing MVS depth 
   <img src="media/teaser.jpeg" alt="example output" width="720" />
 </p>
 
-
-https://user-images.githubusercontent.com/14994206/187824325-e1878d77-2f14-4ea9-bc02-3fded1bb1851.mp4
-
+https://github.com/nianticlabs/simplerecon/assets/14994206/ae5074c2-6537-45f1-9f5e-0b3646a96dcb
 
 https://user-images.githubusercontent.com/14994206/189788536-5fa8a1b5-ae8b-4f64-92d6-1ff1abb03eaf.mp4
 
