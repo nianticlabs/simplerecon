@@ -20,6 +20,7 @@ This code is for non-commercial use; please see the [license file](LICENSE) for 
 
 ## 🆕 Updates
 
+25/05/2023: Fixed package verions for `llvm-openmp`, `clang`, and `protobuf`.
 09/03/2023: Added kornia version to the environments file to fix kornia typing issue. (thanks @natesimon!)
 26/01/2023: The license has been modified to make running the model for academic reasons easier. Please the LICENSE file for the exact details.
 
