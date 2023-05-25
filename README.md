@@ -20,8 +20,10 @@ This code is for non-commercial use; please see the [license file](LICENSE) for 
 
 ## 🆕 Updates
 
-25/05/2023: Fixed package verions for `llvm-openmp`, `clang`, and `protobuf`.
+25/05/2023: Fixed package verions for `llvm-openmp`, `clang`, and `protobuf`. Do use this new environment file if you have trouble running the code and/or if dataloading is being limited to a single thread.
+
 09/03/2023: Added kornia version to the environments file to fix kornia typing issue. (thanks @natesimon!)
+
 26/01/2023: The license has been modified to make running the model for academic reasons easier. Please the LICENSE file for the exact details.
 
 There is an update as of 31/12/2022 that fixes slightly wrong intrinsics, flip augmentation for the cost volume, and a 
